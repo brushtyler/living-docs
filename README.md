@@ -2,6 +2,11 @@
 
 A collection of specialized skills for the Gemini CLI to automate miscellaneous tasks.
 
+## Available Skills
+
+### [Web Snapshot](./web-snapshot)
+Automate web browsing and take screenshots of pages or elements for documentation. It uses Selenium to interact with web pages and can be configured with complex task sequences.
+
 ## How to Install a Skill
 
 To install a skill from this repository, use the `gemini skills install` command pointing to the `.skill` file of the desired skill.
@@ -9,7 +14,7 @@ To install a skill from this repository, use the `gemini skills install` command
 Example for the Web Snapshot skill:
 
 ```bash
-gemini skills install path/my.skill --scope workspace
+gemini skills install web-snapshot/web-snapshot.skill --scope workspace
 ```
 
 After installation, you can reload the skills in your Gemini CLI session:
