@@ -5,6 +5,7 @@ The `doc-regen` skill automates the process of keeping your Markdown documentati
 ## Features
 
 - **Automated Staleness Check**: Instantly see which docs are out of date.
+- **Visual Sync**: Automatically identifies UI components, resolves their URLs (Next.js support), and generates/updates `snapshot-recipes`.
 - **Context-Aware Diffs**: Pulls only the relevant code changes since the doc's last commit.
 - **Style Preservation**: Designed to update content while respecting your existing documentation structure.
 - **Git Fallback**: Works even in non-Git environments by analyzing the current session's modified files.

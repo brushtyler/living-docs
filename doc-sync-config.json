@@ -1,0 +1,9 @@
+{
+  "base_url": "http://localhost:5050",
+  "mappings": [
+    {
+      "pattern": "sandbox/app/page.tsx",
+      "urls": ["/"]
+    }
+  ]
+}

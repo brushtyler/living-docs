@@ -31,7 +31,23 @@ Trigger this skill when you want to ensure your documentation matches your imple
     ```bash
     python3 doc-regen/scripts/git_helper.py diff <doc_file_path>
     ```
-4.  **LLM Synthesis**: The agent combines the current document content with the relevant diffs to generate an updated version.
+4.  **Visual Synchronization (UI Components)**:
+    If modified files are UI components (e.g., `.tsx`, `.jsx`, `.html`):
+    - Use the **Route Resolver** to find where the component can be viewed:
+      ```bash
+      python3 web-doc-tools/scripts/resolver.py <ui_file_path>
+      ```
+    - Use the **Discovery Helper** to suggest selectors and names:
+      ```bash
+      python3 web-doc-tools/scripts/discovery_helper.py <ui_file_path>
+      ```
+    - Search the documentation for existing images or recipes related to this component.
+    - **Update/Create Recipes**: Write or update `<!-- snapshot-recipe ... -->` blocks in the Markdown file using the resolved URLs and suggested selectors.
+    - **Execute Sync**: After updating the recipes, trigger the `ui-doc-sync` skill to refresh the images:
+      ```bash
+      # The agent should call the ui-doc-sync action
+      ```
+5.  **LLM Synthesis**: The agent combines the current document content with the relevant diffs to generate an updated version.
 
 ### Fallback (No Git)
 If the project is not a Git repository:

@@ -4,6 +4,13 @@ __pycache__/
 
 # Virtual environment
 venv/
+**/venv/
+
+# Test generated files
+temp_tasks.json
+test_tasks.json
+metadata_*.json
+sandbox/docs/assets/*.png
 
 # Editor temporary files
 *.swp

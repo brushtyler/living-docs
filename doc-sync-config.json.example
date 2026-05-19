@@ -1,0 +1,15 @@
+{
+  "base_url": "http://localhost:3000",
+  "mappings": [
+    {
+      "description": "Custom components mapping",
+      "pattern": "src/components/(.*)\\.tsx",
+      "urls": ["/styleguide", "/preview/{1}"]
+    },
+    {
+      "description": "Legacy pages",
+      "pattern": "src/legacy/.*\\.html",
+      "urls": ["/legacy-view"]
+    }
+  ]
+}
