@@ -47,9 +47,12 @@ For a detailed guide on how to prepare your project, see the [Adoption Guide](./
 1.  **Installation**:
     For detailed setup instructions, including system requirements and virtual environment preparation, see the [Installation Guide](./INSTALL.md).
     
-    Quick command:
+    Quick command (Installs Master Orchestrator + Supporting Skills):
     ```bash
     gemini skills install doc-pipeline/ --scope workspace
+    gemini skills install doc-regen/doc-regen.skill --scope workspace
+    gemini skills install web-doc-tools/ui-doc-sync.skill --scope workspace
+    gemini skills install web-doc-tools/web-snapshot.skill --scope workspace
     /skills reload
     ```
 
