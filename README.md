@@ -25,6 +25,18 @@ The "Execution" layer for visual documentation.
 
 ---
 
+## Project Adoption & Requirements
+
+Living Docs is built for **web projects under active development** within the current working directory. It is designed to work as you build, ensuring that documentation is never more than one command away from the latest code.
+
+- **Supported Frontends**: Built-in support for **Next.js** (App & Pages router). Extensible to **React, Vue, Angular, Svelte**, and more via custom configuration.
+- **Git Integration**: Requires a Git repository for historical change detection.
+- **Environment**: Requires Python 3.12+, Google Chrome, and a running local dev server for visual updates.
+
+For a detailed guide on how to prepare your project, see the [Adoption Guide](./ADOPTION.md).
+
+---
+
 ## How to Use the Pipeline
 
 1.  **Installation**:
@@ -92,6 +104,9 @@ After installation, you can reload the skills in your Gemini CLI session:
 ```bash
 /skills reload
 ```
+
+---
+
 ## Contributing
 
 We welcome contributions of new skills! To add a new skill:
