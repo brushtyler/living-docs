@@ -1,0 +1,17 @@
+{
+  "name": "doc-regen",
+  "description": "Regenerate and synchronize documentation with the latest codebase changes using Git history.",
+  "version": "1.0.0",
+  "actions": [
+    {
+      "name": "regen documentation",
+      "description": "Identifies stale documentation and updates it based on recent code changes. (Trigger: 'regen documentation', 'update docs')",
+      "steps": [
+        {
+          "command": "python3 doc-regen/scripts/git_helper.py staleness",
+          "description": "Analyzing documentation staleness and identifying relevant code changes."
+        }
+      ]
+    }
+  ]
+}

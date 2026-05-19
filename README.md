@@ -7,6 +7,9 @@ A collection of specialized skills for the Gemini CLI to automate miscellaneous 
 ### [Web Documentation Tools](./web-doc-tools)
 A suite of tools to automate web browsing, capture screenshots, and synchronize UI-related documentation using Selenium.
 
+### [Codebase Documentation Synchronizer](./doc-regen)
+Automatically regenerate and synchronize documentation with the latest codebase changes using Git history or session context.
+
 ## How to Install a Skill
 
 To install a skill from this repository, use the `gemini skills install` command pointing to the `.skill` file of the desired skill.
