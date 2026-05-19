@@ -55,14 +55,18 @@ def extract_recipes(md_file_path):
     for match in RECIPE_PATTERN.finditer(content):
         try:
             recipe_data = json.loads(match.group("json"))
-            recipes.append({
+            
+            # Ensure prerequisites exists as a list, default to ['login'] if missing
+            if "prerequisites" not in recipe_data:
+                recipe_data["prerequisites"] = ["login"]
+            
+            recipe_data.update({
                 "alt": match.group("alt"),
                 "image_path": match.group("path"),
-                "tasks": recipe_data.get("tasks", []),
-                "flow": recipe_data.get("flow"),
                 "file": md_file_path,
                 "span": match.span()
             })
+            recipes.append(recipe_data)
         except json.JSONDecodeError:
             print(f"Warning: Failed to parse JSON recipe in {md_file_path}")
             
@@ -74,6 +78,8 @@ def run_bot(bot_path, tasks, output_metadata=None):
         json.dump(tasks, f)
     
     cmd = [sys.executable, bot_path, "--tasks", tasks_file]
+    if output_metadata:
+        cmd.extend(["--output-metadata", output_metadata])
     
     print(f"Running bot with {len(tasks)} tasks...")
     result = subprocess.run(cmd, capture_output=True, text=True)
@@ -88,6 +94,7 @@ def main():
     parser.add_argument("--dir", default=".", help="Directory to scan for Markdown files")
     parser.add_argument("--bot", required=True, help="Path to browser_bot.py")
     parser.add_argument("--config", help="Explicit path to doc-sync-config.json")
+    parser.add_argument("--metadata", help="Path to save extracted UI metadata")
     args = parser.parse_args()
     
     config = load_config(explicit_path=args.config, search_dir=args.dir)
@@ -143,13 +150,19 @@ def main():
             master_tasks.append(new_task)
 
     if master_tasks:
-        result = run_bot(args.bot, master_tasks)
+        result = run_bot(args.bot, master_tasks, args.metadata)
         
         if result.returncode != 0:
             print(f"Error updating screenshots: {result.stderr}")
         else:
             print(result.stdout)
-            print("Successfully updated all screenshots.")
+            if args.metadata and os.path.exists(args.metadata):
+                with open(args.metadata, "r") as f:
+                    meta = json.load(f)
+                    print(f"Successfully updated screenshots. Extracted metadata saved to {args.metadata}")
+                    print(f"Extracted info: {json.dumps(meta, indent=2)}")
+            else:
+                print("Successfully updated all screenshots.")
 
 if __name__ == "__main__":
     main()
