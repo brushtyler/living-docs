@@ -35,11 +35,11 @@ Trigger this skill when you want to ensure your documentation matches your imple
     If modified files are UI components (e.g., `.tsx`, `.jsx`, `.html`):
     - Use the **Route Resolver** to find where the component can be viewed:
       ```bash
-      python3 web-doc-tools/scripts/resolver.py <ui_file_path>
+      python3 doc-regen/scripts/resolver.py <ui_file_path>
       ```
     - Use the **Discovery Helper** to suggest selectors and names:
       ```bash
-      python3 web-doc-tools/scripts/discovery_helper.py <ui_file_path>
+      python3 doc-regen/scripts/discovery_helper.py <ui_file_path>
       ```
     - Search the documentation for existing images or recipes related to this component.
     - **Update/Create Recipes**: Write or update the recipe in the Markdown file. **Crucially**, you must include both the image link and the `snapshot-recipe` comment immediately after it.
