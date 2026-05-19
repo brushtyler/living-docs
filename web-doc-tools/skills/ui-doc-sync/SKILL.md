@@ -13,13 +13,14 @@ The skill scans your project for Markdown files containing `snapshot-recipe` com
 
 ### Recipe Format
 
-Place a `snapshot-recipe` comment immediately after a Markdown image link:
+Place a `snapshot-recipe` comment immediately after a Markdown image link. Recipes support **relative URLs** (resolved against `base_url` in `doc-sync-config.json`) and **reusable flows**.
 
 ```markdown
 ![Login Form](./assets/login_form.png)
 <!-- snapshot-recipe: {
+  "flow": "optional_named_flow",
   "tasks": [
-    {"action": "goto", "url": "https://example.com/login"},
+    {"action": "goto", "url": "/login"},
     {"action": "snapshot_element", "selector": "#login-form", "filename": "assets/login_form.png"},
     {"action": "extract_info", "selector": "#login-form h2"}
   ]

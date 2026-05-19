@@ -20,6 +20,16 @@ def find_markdown_files(root_dir):
                 md_files.append(os.path.join(root, file))
     return md_files
 
+def load_config():
+    config_path = "doc-sync-config.json"
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r") as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Warning: Failed to load config: {e}")
+    return {}
+
 def extract_recipes(md_file_path):
     with open(md_file_path, "r") as f:
         content = f.read()
@@ -32,6 +42,7 @@ def extract_recipes(md_file_path):
                 "alt": match.group("alt"),
                 "image_path": match.group("path"),
                 "tasks": recipe_data.get("tasks", []),
+                "flow": recipe_data.get("flow"),
                 "file": md_file_path,
                 "span": match.span()
             })
@@ -46,8 +57,6 @@ def run_bot(bot_path, tasks, output_metadata=None):
         json.dump(tasks, f)
     
     cmd = [sys.executable, bot_path, "--tasks", tasks_file]
-    if output_metadata:
-        cmd.extend(["--output-metadata", output_metadata])
     
     print(f"Running bot with {len(tasks)} tasks...")
     result = subprocess.run(cmd, capture_output=True, text=True)
@@ -63,6 +72,10 @@ def main():
     parser.add_argument("--bot", required=True, help="Path to browser_bot.py")
     args = parser.parse_args()
     
+    config = load_config()
+    base_url = config.get("base_url", "").rstrip("/")
+    flows = config.get("flows", {})
+
     md_files = find_markdown_files(args.dir)
     all_recipes = []
     for md_file in md_files:
@@ -75,38 +88,49 @@ def main():
 
     print(f"Found {len(all_recipes)} recipes in {len(md_files)} files.")
     
+    master_tasks = []
+    
     for i, recipe in enumerate(all_recipes):
-        print(f"[{i+1}/{len(all_recipes)}] Updating {recipe['image_path']} for {recipe['file']}...")
+        md_dir = os.path.dirname(recipe['file'])
         
         # Ensure image directory exists
-        img_dir = os.path.dirname(os.path.join(os.path.dirname(recipe['file']), recipe['image_path']))
+        img_full_path = os.path.join(md_dir, recipe['image_path'])
+        img_dir = os.path.dirname(img_full_path)
         if img_dir and not os.path.exists(img_dir):
             os.makedirs(img_dir)
             
-        metadata_file = f"metadata_{i}.json"
+        # Expand tasks
+        recipe_tasks = []
         
-        # Prepare tasks (ensure paths are correct relative to where the bot runs)
-        # For simplicity, we assume the bot runs from the root and paths in recipes are root-relative or handled.
-        # But usually they are relative to the MD file.
-        md_dir = os.path.dirname(recipe['file'])
-        adjusted_tasks = []
-        for task in recipe['tasks']:
+        # 1. Add flow tasks if specified
+        if recipe.get("flow") and recipe["flow"] in flows:
+            recipe_tasks.extend(flows[recipe["flow"]])
+        
+        # 2. Add specific recipe tasks
+        recipe_tasks.extend(recipe["tasks"])
+        
+        # Adjust tasks (resolve URLs and filenames)
+        for task in recipe_tasks:
             new_task = task.copy()
+            
+            # Resolve relative URLs
+            if 'url' in new_task and new_task['url'].startswith("/") and base_url:
+                new_task['url'] = base_url + new_task['url']
+                
+            # Resolve filenames relative to MD file
             if 'filename' in new_task:
                 new_task['filename'] = os.path.join(md_dir, new_task['filename'])
-            adjusted_tasks.append(new_task)
             
-        result = run_bot(args.bot, adjusted_tasks, metadata_file)
+            master_tasks.append(new_task)
+
+    if master_tasks:
+        result = run_bot(args.bot, master_tasks)
         
         if result.returncode != 0:
-            print(f"Error updating {recipe['image_path']}: {result.stderr}")
+            print(f"Error updating screenshots: {result.stderr}")
         else:
-            if os.path.exists(metadata_file):
-                with open(metadata_file, "r") as f:
-                    meta = json.load(f)
-                    print(f"  Extracted info: {json.dumps(meta, indent=2)}")
-                os.remove(metadata_file)
-            print(f"  Successfully updated {recipe['image_path']}")
+            print(result.stdout)
+            print("Successfully updated all screenshots.")
 
 if __name__ == "__main__":
     main()

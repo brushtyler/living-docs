@@ -1,5 +1,6 @@
 {
   "base_url": "http://localhost:5050",
+  "flows": {},
   "mappings": [
     {
       "pattern": "sandbox/app/page.tsx",

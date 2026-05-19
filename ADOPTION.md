@@ -22,6 +22,13 @@ You can support **any** web framework (React, Vue, Angular, Svelte, or even stat
 ```json
 {
   "base_url": "http://localhost:3000",
+  "flows": {
+    "login": [
+      {"action": "goto", "url": "/login"},
+      {"action": "type", "selector": "#user", "text": "admin"},
+      {"action": "click", "selector": "#submit"}
+    ]
+  },
   "mappings": [
     {
       "description": "User Components",
@@ -37,14 +44,15 @@ You can support **any** web framework (React, Vue, Angular, Svelte, or even stat
 To enable **Visual Sync**, you must provide the agent with "recipes" inside your Markdown files.
 
 ### The Recipe Format
-Place a `snapshot-recipe` HTML comment immediately after an image link:
+Place a `snapshot-recipe` HTML comment immediately after an image link. Recipes can use **relative URLs** (resolved via `base_url`) and **reusable flows** (defined in your config).
 
 ```markdown
 ![Login Page](./assets/login.png)
 <!-- snapshot-recipe: {
+  "flow": "login",
   "tasks": [
-    {"action": "goto", "url": "http://localhost:3000/login"},
-    {"action": "snapshot_element", "selector": "#login-form", "filename": "assets/login.png"}
+    {"action": "goto", "url": "/dashboard"},
+    {"action": "snapshot_element", "selector": "#dashboard-header", "filename": "assets/dashboard.png"}
   ]
 } -->
 ```

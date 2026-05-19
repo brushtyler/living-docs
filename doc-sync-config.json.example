@@ -1,5 +1,14 @@
 {
   "base_url": "http://localhost:3000",
+  "flows": {
+    "login": [
+      {"action": "goto", "url": "/login"},
+      {"action": "type", "selector": "#user", "text": "admin"},
+      {"action": "type", "selector": "#pass", "text": "password"},
+      {"action": "click", "selector": "#submit"},
+      {"action": "wait", "seconds": 1}
+    ]
+  },
   "mappings": [
     {
       "description": "Custom components mapping",
