@@ -8,7 +8,7 @@
       "description": "Scans the project for 'snapshot-recipe' blocks and updates all screenshots. Also extracts UI text to help identify where documentation needs updates. (Trigger: 'regen user documentation')",
       "steps": [
         {
-          "command": "web-snapshot/venv/bin/python3 web-snapshot/skills/ui-doc-sync/scripts/updater.py --bot web-snapshot/browser_bot.py",
+          "command": "web-doc-tools/venv/bin/python3 web-doc-tools/skills/ui-doc-sync/scripts/updater.py --bot web-doc-tools/browser_bot.py",
           "description": "Running the UI-to-Doc synchronization script."
         }
       ]

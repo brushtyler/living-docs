@@ -45,7 +45,7 @@ If a user asks to "take a screenshot of the login form on example.com":
     ```
 2.  Execute the script:
     ```bash
-    bash skills/web-snapshot/scripts/run_bot.sh --tasks tasks.json
+    bash web-doc-tools/skills/web-snapshot/scripts/run_bot.sh --tasks tasks.json
     ```
 
 #### Example 2: Snapshot with UI Verification
@@ -61,7 +61,7 @@ If a user asks to "take a screenshot and check the button text":
     ```
 2.  Execute the script with the `--output-metadata` flag (only required when `extract_info` is used):
     ```bash
-    bash skills/web-snapshot/scripts/run_bot.sh --tasks tasks.json --output-metadata metadata.json
+    bash web-doc-tools/skills/web-snapshot/scripts/run_bot.sh --tasks tasks.json --output-metadata metadata.json
     ```
 
 ## Best Practices

@@ -8,7 +8,7 @@ The tool is packaged as a `.skill` file, which is the native way to extend Gemin
 
 ### Installation
 ```bash
-gemini skills install web-snapshot.skill --scope workspace
+gemini skills install web-doc-tools/web-snapshot.skill --scope workspace
 ```
 
 ### Usage
