@@ -1,6 +1,8 @@
-# Gemini CLI Skills
+# Living Docs
 
-A collection of specialized skills for the Gemini CLI to automate documentation and UI-related tasks.
+**The Automated Documentation Pipeline for Gemini CLI**
+
+*Documentation that stays in sync with code logic and UI visuals.*
 
 ## The Unified Documentation Pipeline
 
