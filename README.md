@@ -42,6 +42,7 @@ For a detailed guide on how to prepare your project, see the [Adoption Guide](./
 1.  **Installation**:
     ```bash
     gemini skills install doc-regen/doc-regen.skill --scope workspace
+    gemini skills install web-doc-tools/ui-doc-sync.skill --scope workspace
     gemini skills install web-doc-tools/web-snapshot.skill --scope workspace
     /skills reload
     ```
