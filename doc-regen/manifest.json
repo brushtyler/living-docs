@@ -12,6 +12,16 @@
           "description": "Analyzing documentation staleness and identifying relevant code changes."
         }
       ]
+    },
+    {
+      "name": "detect recipe changes",
+      "description": "Checks if any 'snapshot-recipe' blocks were recently added or modified, recommending a visual sync if needed.",
+      "steps": [
+        {
+          "command": "python3 doc-regen/scripts/git_helper.py check-recipes",
+          "description": "Scanning for recent recipe changes."
+        }
+      ]
     }
   ]
 }

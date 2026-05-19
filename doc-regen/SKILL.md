@@ -52,10 +52,19 @@ Trigger this skill when you want to ensure your documentation matches your imple
         ]
       } -->
       ```
-    - **Execute Sync**: After updating the recipes, trigger the `ui-doc-sync` skill to refresh the images by saying:
-      > "regen user documentation"
+    - **Execute Sync**: After updating the recipes, you MUST ensure they are visually synchronized.
+      1.  **Verify Changes**: Run the `detect recipe changes` action to confirm recipes were added/modified.
+      2.  **Trigger Sync**: Use the unified orchestrator or trigger `ui-doc-sync`:
+          ```bash
+          python3 scripts/doc_sync_manager.py --force-sync
+          ```
+          Alternatively, say: "**regen user documentation**".
       (Ensure the local dev server is running before triggering the sync).
 5.  **LLM Synthesis**: The agent combines the current document content with the relevant diffs to generate an updated version.
+6.  **Unified Pipeline**: For a full sweep of the codebase and documentation, use the unified manager:
+    ```bash
+    python3 scripts/doc_sync_manager.py
+    ```
 
 ### Fallback (No Git)
 If the project is not a Git repository:

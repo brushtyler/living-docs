@@ -6,10 +6,12 @@ import json
 import requests
 from PIL import Image
 
+import sys
+
 # Helper to start mock server
 @pytest.fixture(scope="session", autouse=True)
 def mock_server():
-    process = subprocess.Popen(["venv/bin/python3", "tests/mock_server.py"])
+    process = subprocess.Popen([sys.executable, "tests/mock_server.py"])
     # Wait for server to be ready
     for _ in range(10):
         try:
@@ -25,7 +27,7 @@ def run_browser_bot(tasks):
         json.dump(tasks, f)
     
     result = subprocess.run(
-        ["venv/bin/python3", "browser_bot.py", "--tasks", "test_tasks.json"],
+        [sys.executable, "browser_bot.py", "--tasks", "test_tasks.json"],
         capture_output=True,
         text=True
     )

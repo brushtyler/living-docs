@@ -26,7 +26,9 @@ You can support **any** web framework (React, Vue, Angular, Svelte, or even stat
     "login": [
       {"action": "goto", "url": "/login"},
       {"action": "type", "selector": "#user", "text": "admin"},
-      {"action": "click", "selector": "#submit"}
+      {"action": "type", "selector": "#pass", "text": "password"},
+      {"action": "click", "selector": "#submit"},
+      {"action": "wait", "seconds": 2}
     ]
   },
   "mappings": [

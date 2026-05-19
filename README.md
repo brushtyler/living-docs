@@ -13,6 +13,11 @@ This repository provides a coordinated pipeline that bridges the gap between cod
 
 ### Key Skills
 
+#### [Doc Pipeline Orchestrator](./doc-pipeline)
+The "Master Skill". It coordinates the entire pipeline, bridging text updates and visual synchronization.
+- **Trigger**: "Run full doc sync", "Sync all documentation".
+- **Capabilities**: End-to-end synchronization and readiness auditing.
+
 #### [Codebase Documentation Synchronizer](./doc-regen)
 The "Brain" of the pipeline. It uses Git history to detect stale documentation and orchestrates the update process.
 - **Trigger**: "Regen documentation", "Update docs based on recent changes".
@@ -40,10 +45,11 @@ For a detailed guide on how to prepare your project, see the [Adoption Guide](./
 ## How to Use the Pipeline
 
 1.  **Installation**:
+    For detailed setup instructions, including system requirements and virtual environment preparation, see the [Installation Guide](./INSTALL.md).
+    
+    Quick command:
     ```bash
-    gemini skills install doc-regen/doc-regen.skill --scope workspace
-    gemini skills install web-doc-tools/ui-doc-sync.skill --scope workspace
-    gemini skills install web-doc-tools/web-snapshot.skill --scope workspace
+    gemini skills install doc-pipeline/ --scope workspace
     /skills reload
     ```
 
@@ -75,7 +81,7 @@ For a detailed guide on how to prepare your project, see the [Adoption Guide](./
 
 ## Testing & Sandbox
 
-We provide a **Sandbox Environment** to verify the pipeline without impacting your main codebase.
+We provide a **Sandbox Environment** and a comprehensive test suite to verify the pipeline. For detailed instructions on running integration tests, see the [Testing Guide](./TESTING.md).
 
 ### Running the Sandbox Test
 

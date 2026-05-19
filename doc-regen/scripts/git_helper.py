@@ -79,5 +79,25 @@ def main():
         diff_text = run_git(['diff', last_commit])
         print(diff_text)
 
+    elif command == 'check-recipes':
+        # Check if any snapshot-recipe blocks were added or modified in unstaged/staged changes
+        diff_text = run_git(['diff', 'HEAD'])
+        staged_diff = run_git(['diff', '--cached'])
+        
+        full_diff = (diff_text or "") + "\n" + (staged_diff or "")
+        
+        # Look for "snapshot-recipe" in added lines (starting with +)
+        recipe_changes = []
+        for line in full_diff.split('\n'):
+            if line.startswith('+') and 'snapshot-recipe' in line:
+                recipe_changes.append(line)
+        
+        result = {
+            "ui_sync_recommended": len(recipe_changes) > 0,
+            "changes_detected": len(recipe_changes),
+            "summary": f"Detected {len(recipe_changes)} new or modified snapshot-recipes."
+        }
+        print(json.dumps(result, indent=2))
+
 if __name__ == "__main__":
     main()
