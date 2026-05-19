@@ -57,13 +57,23 @@ The "Execution" layer for visual documentation.
 We provide a **Sandbox Environment** to verify the pipeline without impacting your main codebase.
 
 ### Running the Sandbox Test
-1.  **Start the Mock Server**:
+
+1.  **Initial Setup** (First time only):
+    ```bash
+    virtualenv sandbox/venv
+    sandbox/venv/bin/pip install -r sandbox/requirements.txt
+    ```
+
+2.  **Start the Mock Server**:
     ```bash
     sandbox/venv/bin/python3 sandbox/mock_server.py
     ```
-2.  **Modify a Component**: Change a color or text in `sandbox/app/page.tsx`.
-3.  **Trigger Sync**: Ask the CLI to "Update sandbox documentation".
-4.  **Verify**: Check `sandbox/docs/assets/sandbox.png` for the updated visual.
+
+3.  **Modify a Component**: Change a color or text in `sandbox/app/page.tsx`.
+
+4.  **Trigger Sync**: Ask the CLI to "Update sandbox documentation".
+
+5.  **Verify**: Check `sandbox/docs/assets/sandbox.png` for the updated visual.
 
 ---
 
