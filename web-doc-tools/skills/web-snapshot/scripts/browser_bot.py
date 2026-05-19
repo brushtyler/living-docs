@@ -23,7 +23,8 @@ def setup_driver():
     driver = webdriver.Chrome(service=service, options=options)
     return driver
 
-def execute_tasks(driver, tasks):
+def execute_tasks(driver, tasks, metadata_file=None):
+    metadata = {}
     for task in tasks:
         action = task.get("action")
         try:
@@ -69,6 +70,15 @@ def execute_tasks(driver, tasks):
                 )
                 element.screenshot(filename)
             
+            elif action == "extract_info":
+                selector = task.get("selector")
+                key = task.get("key", selector)
+                print(f"Extracting info from {selector}")
+                element = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, selector))
+                )
+                metadata[key] = element.text
+            
             else:
                 print(f"Unknown action: {action}")
                 
@@ -78,10 +88,15 @@ def execute_tasks(driver, tasks):
         except Exception as e:
             print(f"Error executing action '{action}': {str(e)}", file=sys.stderr)
             sys.exit(1)
+    
+    if metadata_file and metadata:
+        with open(metadata_file, "w") as f:
+            json.dump(metadata, f)
 
 def main():
     parser = argparse.ArgumentParser(description="Web Snapshot Browser Bot")
     parser.add_argument("--tasks", required=True, help="Path to JSON file containing tasks")
+    parser.add_argument("--output-metadata", help="Path to save extracted metadata")
     args = parser.parse_args()
     
     if not os.path.exists(args.tasks):
@@ -93,7 +108,7 @@ def main():
         
     driver = setup_driver()
     try:
-        execute_tasks(driver, tasks)
+        execute_tasks(driver, tasks, args.output_metadata)
     finally:
         driver.quit()
 
