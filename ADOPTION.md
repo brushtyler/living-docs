@@ -44,12 +44,12 @@ You can support **any** web framework (React, Vue, Angular, Svelte, or even stat
 To enable **Visual Sync**, you must provide the agent with "recipes" inside your Markdown files.
 
 ### The Recipe Format
-Place a `snapshot-recipe` HTML comment immediately after an image link. Recipes can use **relative URLs** (resolved via `base_url`) and **reusable flows** (defined in your config).
+Place a `snapshot-recipe` HTML comment immediately after an image link. Recipes can use **relative URLs** (resolved via `base_url`) and one or more **prerequisite flows** (defined in your config).
 
 ```markdown
 ![Login Page](./assets/login.png)
 <!-- snapshot-recipe: {
-  "flow": "login",
+  "prerequisites": ["login"],
   "tasks": [
     {"action": "goto", "url": "/dashboard"},
     {"action": "snapshot_element", "selector": "#dashboard-header", "filename": "assets/dashboard.png"}

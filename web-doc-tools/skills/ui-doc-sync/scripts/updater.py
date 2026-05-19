@@ -20,14 +20,31 @@ def find_markdown_files(root_dir):
                 md_files.append(os.path.join(root, file))
     return md_files
 
-def load_config():
-    config_path = "doc-sync-config.json"
-    if os.path.exists(config_path):
-        try:
-            with open(config_path, "r") as f:
-                return json.load(f)
-        except Exception as e:
-            print(f"Warning: Failed to load config: {e}")
+def load_config(explicit_path=None, search_dir=None):
+    if explicit_path:
+        if os.path.exists(explicit_path):
+            try:
+                with open(explicit_path, "r") as f:
+                    return json.load(f)
+            except Exception as e:
+                print(f"Warning: Failed to load config from {explicit_path}: {e}")
+        else:
+            print(f"Warning: Explicit config path {explicit_path} not found.")
+
+    # Search strategy: check search_dir, then CWD
+    search_paths = []
+    if search_dir:
+        search_paths.append(os.path.join(search_dir, "doc-sync-config.json"))
+    search_paths.append("doc-sync-config.json")
+
+    for path in search_paths:
+        if os.path.exists(path):
+            try:
+                with open(path, "r") as f:
+                    return json.load(f)
+            except Exception as e:
+                print(f"Warning: Failed to load config from {path}: {e}")
+    
     return {}
 
 def extract_recipes(md_file_path):
@@ -70,9 +87,10 @@ def main():
     parser = argparse.ArgumentParser(description="Documentation Screenshot Updater")
     parser.add_argument("--dir", default=".", help="Directory to scan for Markdown files")
     parser.add_argument("--bot", required=True, help="Path to browser_bot.py")
+    parser.add_argument("--config", help="Explicit path to doc-sync-config.json")
     args = parser.parse_args()
     
-    config = load_config()
+    config = load_config(explicit_path=args.config, search_dir=args.dir)
     base_url = config.get("base_url", "").rstrip("/")
     flows = config.get("flows", {})
 
@@ -102,9 +120,10 @@ def main():
         # Expand tasks
         recipe_tasks = []
         
-        # 1. Add flow tasks if specified
-        if recipe.get("flow") and recipe["flow"] in flows:
-            recipe_tasks.extend(flows[recipe["flow"]])
+        # 1. Add flow tasks from prerequisites if they exist in config
+        for flow_name in recipe.get("prerequisites", []):
+            if flow_name in flows:
+                recipe_tasks.extend(flows[flow_name])
         
         # 2. Add specific recipe tasks
         recipe_tasks.extend(recipe["tasks"])
