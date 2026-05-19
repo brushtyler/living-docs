@@ -23,7 +23,8 @@ def setup_driver():
     driver = webdriver.Chrome(service=service, options=options)
     return driver
 
-def execute_tasks(driver, tasks):
+def execute_tasks(driver, tasks, metadata_output=None):
+    metadata = []
     for task in tasks:
         action = task.get("action")
         try:
@@ -68,6 +69,24 @@ def execute_tasks(driver, tasks):
                     EC.presence_of_element_located((By.CSS_SELECTOR, selector))
                 )
                 element.screenshot(filename)
+
+            elif action == "extract_info":
+                selector = task.get("selector")
+                print(f"Extracting info from {selector}")
+                element = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, selector))
+                )
+                info = {
+                    "selector": selector,
+                    "text": element.text,
+                    "tag": element.tag_name,
+                    "attributes": {
+                        attr: element.get_attribute(attr)
+                        for attr in ["aria-label", "alt", "title", "placeholder", "value"]
+                        if element.get_attribute(attr)
+                    }
+                }
+                metadata.append(info)
             
             else:
                 print(f"Unknown action: {action}")
@@ -78,10 +97,15 @@ def execute_tasks(driver, tasks):
         except Exception as e:
             print(f"Error executing action '{action}': {str(e)}", file=sys.stderr)
             sys.exit(1)
+    
+    if metadata_output and metadata:
+        with open(metadata_output, "w") as f:
+            json.dump(metadata, f, indent=2)
 
 def main():
     parser = argparse.ArgumentParser(description="Web Snapshot Browser Bot")
     parser.add_argument("--tasks", required=True, help="Path to JSON file containing tasks")
+    parser.add_argument("--output-metadata", help="Path to save extracted metadata (JSON)")
     args = parser.parse_args()
     
     if not os.path.exists(args.tasks):
@@ -93,7 +117,7 @@ def main():
         
     driver = setup_driver()
     try:
-        execute_tasks(driver, tasks)
+        execute_tasks(driver, tasks, args.output_metadata)
     finally:
         driver.quit()
 

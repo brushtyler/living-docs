@@ -29,22 +29,39 @@ A task list is a JSON array of objects, where each object has an `action` and as
 | `wait` | `seconds` | Pauses execution for the specified number of seconds. |
 | `snapshot_page` | `filename` | Saves a screenshot of the entire viewport. |
 | `snapshot_element` | `selector`, `filename` | Saves a screenshot of a specific element. |
+| `extract_info` | `selector` | Captures text and attributes of an element for verification. |
 
-### Example Workflow
+### Example Workflows
 
-If a user asks to "take a screenshot of the login form on example.com", you should:
+#### Example 1: Simple Component Snapshot
+If a user asks to "take a screenshot of the login form on example.com":
 
-1.  Identify the URL and CSS selectors.
-2.  Create a JSON file (e.g., `tasks.json`):
+1.  Create a JSON file (e.g., `tasks.json`):
     ```json
     [
       {"action": "goto", "url": "https://example.com/login"},
       {"action": "snapshot_element", "selector": "#login-form", "filename": "login_form.png"}
     ]
     ```
-3.  Execute the script:
+2.  Execute the script:
     ```bash
     bash skills/web-snapshot/scripts/run_bot.sh --tasks tasks.json
+    ```
+
+#### Example 2: Snapshot with UI Verification
+If a user asks to "take a screenshot and check the button text":
+
+1.  Create a JSON file (e.g., `tasks.json`):
+    ```json
+    [
+      {"action": "goto", "url": "https://example.com/login"},
+      {"action": "snapshot_element", "selector": "#login-form", "filename": "login_form.png"},
+      {"action": "extract_info", "selector": "button.submit"}
+    ]
+    ```
+2.  Execute the script with the `--output-metadata` flag (only required when `extract_info` is used):
+    ```bash
+    bash skills/web-snapshot/scripts/run_bot.sh --tasks tasks.json --output-metadata metadata.json
     ```
 
 ## Best Practices
