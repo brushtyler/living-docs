@@ -68,7 +68,20 @@ We provide a **Sandbox Environment** to verify the pipeline without impacting yo
 ---
 
 ## How to Install a Skill
-...
+
+To install a skill from this repository, use the `gemini skills install` command pointing to the `.skill` file of the desired skill.
+
+Example for the Web Snapshot skill:
+
+```bash
+gemini skills install web-doc-tools/web-snapshot.skill --scope workspace
+```
+
+After installation, you can reload the skills in your Gemini CLI session:
+
+```bash
+/skills reload
+```
 ## Contributing
 
 We welcome contributions of new skills! To add a new skill:
