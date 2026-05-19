@@ -11,6 +11,7 @@ This is a demonstration of the automated documentation sync pipeline.
   "prerequisites": [],
   "tasks": [
     {"action": "goto", "url": "/"},
-    {"action": "snapshot_element", "selector": "#sandbox-container", "filename": "assets/sandbox.png"}
+    {"action": "snapshot_element", "selector": "#sandbox-container", "filename": "assets/sandbox.png"},
+    {"action": "extract_info", "selector": "h1", "key": "page_title"}
   ]
 } -->
