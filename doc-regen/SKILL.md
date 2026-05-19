@@ -42,11 +42,19 @@ Trigger this skill when you want to ensure your documentation matches your imple
       python3 web-doc-tools/scripts/discovery_helper.py <ui_file_path>
       ```
     - Search the documentation for existing images or recipes related to this component.
-    - **Update/Create Recipes**: Write or update `<!-- snapshot-recipe ... -->` blocks in the Markdown file using the resolved URLs and suggested selectors.
-    - **Execute Sync**: After updating the recipes, trigger the `ui-doc-sync` skill to refresh the images:
-      ```bash
-      # The agent should call the ui-doc-sync action
+    - **Update/Create Recipes**: Write or update the recipe in the Markdown file. **Crucially**, you must include both the image link and the `snapshot-recipe` comment immediately after it.
+      ```markdown
+      ![Component Name](./assets/filename.png)
+      <!-- snapshot-recipe: {
+        "tasks": [
+          {"action": "goto", "url": "RESOLVED_URL"},
+          {"action": "snapshot_element", "selector": "SUGGESTED_SELECTOR", "filename": "assets/filename.png"}
+        ]
+      } -->
       ```
+    - **Execute Sync**: After updating the recipes, trigger the `ui-doc-sync` skill to refresh the images by saying:
+      > "regen user documentation"
+      (Ensure the local dev server is running before triggering the sync).
 5.  **LLM Synthesis**: The agent combines the current document content with the relevant diffs to generate an updated version.
 
 ### Fallback (No Git)

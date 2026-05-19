@@ -49,6 +49,8 @@ For a detailed guide on how to prepare your project, see the [Adoption Guide](./
 
 2.  **Standard Sync**: Simply ask the Gemini CLI:
     > "Update my documentation to reflect the latest changes in the codebase."
+    
+    *Note: If you have UI components, ensure your local dev server is running (e.g., `npm run dev` or the mock server) so the pipeline can capture screenshots.*
 
 3.  **Extensible Mapping**: To support custom frameworks (non-Next.js), create a `doc-sync-config.json` in your project root:
     ```json

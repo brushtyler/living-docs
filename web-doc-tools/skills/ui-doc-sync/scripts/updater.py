@@ -8,7 +8,7 @@ import sys
 # Regex to find images followed by recipes
 # Matches: ![Alt](path) followed by <!-- snapshot-recipe: {JSON} -->
 RECIPE_PATTERN = re.compile(
-    r'!\[(?P<alt>.*?)\]\((?P<path>.*?)\)\s*\n\s*<!--\s*snapshot-recipe:\s*(?P<json>\{.*?\})\s*-->' ,
+    r'!\[(?P<alt>.*?)\]\((?P<path>.*?)\)\s*[\n\r]*\s*<!--\s*snapshot-recipe:\s*(?P<json>\{.*?\})\s*-->' ,
     re.DOTALL
 )
 
