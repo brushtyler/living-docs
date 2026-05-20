@@ -34,6 +34,9 @@ The JSON file must contain a list of actions.
 | `click` | `selector` | `{"action": "click", "selector": "button.submit"}` |
 | `type` | `selector`, `text` | `{"action": "type", "selector": "#name", "text": "John"}` |
 | `wait` | `seconds` | `{"action": "wait", "seconds": 2}` |
+| `wait_for_selector` | `selector`, `timeout` | `{"action": "wait_for_selector", "selector": ".card"}` |
+| `wait_for_hidden` | `selector`, `timeout` | `{"action": "wait_for_hidden", "selector": ".loading"}` |
+| `wait_for_text` | `selector`, `text`, `timeout` | `{"action": "wait_for_text", "selector": "h1", "text": "Home"}` |
 | `snapshot_page` | `filename` | `{"action": "snapshot_page", "filename": "home.png"}` |
 | `snapshot_element` | `selector`, `filename` | `{"action": "snapshot_element", "selector": "nav", "filename": "menu.png"}` |
 
@@ -44,4 +47,5 @@ The JSON file must contain a list of actions.
 ## Tips for AI Agents
 - Always start with a `goto` action.
 - Use `snapshot_element` for documenting specific UI components (modals, buttons, cards).
-- If a click triggers an animation or AJAX load, add a `wait` action (e.g., 1-2 seconds) before taking a snapshot.
+- **Stabilization**: Instead of generic `wait` actions, prefer `wait_for_hidden` (to wait for spinners to disappear) or `wait_for_text` (to wait for specific content to load).
+- **Network Idle**: The bot automatically waits for the network to be idle after `goto`, `click`, and `type` actions, but explicit waits are more reliable for client-side transitions.

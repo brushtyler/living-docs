@@ -87,19 +87,26 @@ When tasked with updating documentation, you MUST follow this sequence:
 4.  **Visual Sync Preparation (Recipe Generation)**:
     If the modified files involve UI components (e.g., `.tsx`, `.jsx`, `.html`):
     - **Resolve Route**: Use the `resolve_route` action to find where the component can be viewed.
+    - **Handle Dynamic Routes**: If the resolved URL contains dynamic segments (e.g., `/courses/[id]`), you MUST search the codebase for sample data (e.g., in tests or mock data files) to find a valid ID and replace the segment (e.g., `/courses/123`).
     - **Suggest Selectors**: Use `scripts/discovery_helper.py` to suggest CSS selectors for the component.
     - **Update Recipes**: Search the documentation for existing images related to this component. If visuals need updating or adding, you MUST add/update a `snapshot-recipe` comment immediately after the Markdown image link.
       ```markdown
       ![Component Name](./assets/filename.png)
       <!-- snapshot-recipe: {
         "tasks": [
-          {"action": "goto", "url": "RESOLVED_URL"},
+          {"action": "goto", "url": "RESOLVED_URL_WITH_REAL_IDS"},
+          {"action": "wait_for_hidden", "selector": ".loading-spinner"},
           {"action": "snapshot_element", "selector": "SUGGESTED_SELECTOR", "filename": "assets/filename.png"}
         ]
       } -->
       ```
 
-5.  **Pipeline Execution**:
+5.  **Stabilization**:
+    If a snapshot results in a "Loading..." state or missing data:
+    - Identify the loading element's selector or the "Loading" text.
+    - Add a `wait_for_hidden` (for the selector) or `wait_for_text` (waiting for the real content to appear) task before the `snapshot_element` action.
+
+6.  **Pipeline Execution**:
     After updating text and recipes, you MUST trigger the final synchronization.
     - Run the `regen_all` action with `force=true`.
 

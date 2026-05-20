@@ -29,6 +29,9 @@ def wait_for_network_idle(driver, timeout=10, idle_time=1.0):
     Uses JavaScript performance entries to estimate network activity.
     """
     print(f"Waiting for network idle (timeout: {timeout}s)...", flush=True)
+    # Small initial sleep to allow async requests to actually start
+    time.sleep(0.5)
+    
     start_time = time.time()
     last_resource_count = -1
     last_activity_time = time.time()
@@ -86,6 +89,8 @@ def execute_tasks(driver, task_input, metadata_output=None):
                         EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
                     )
                     element.click()
+                    # Wait for network idle after interaction
+                    wait_for_network_idle(driver)
 
                 elif action == "type":
                     selector = task.get("selector")
@@ -96,6 +101,8 @@ def execute_tasks(driver, task_input, metadata_output=None):
                     )
                     element.clear()
                     element.send_keys(text)
+                    # Wait for network idle after interaction
+                    wait_for_network_idle(driver)
 
                 elif action == "wait":
                     seconds = task.get("seconds", 1)
@@ -108,6 +115,23 @@ def execute_tasks(driver, task_input, metadata_output=None):
                     print(f"Waiting for selector {selector} for up to {timeout} seconds", flush=True)
                     WebDriverWait(driver, timeout).until(
                         EC.presence_of_element_located((By.CSS_SELECTOR, selector))
+                    )
+
+                elif action == "wait_for_hidden":
+                    selector = task.get("selector")
+                    timeout = task.get("timeout", 10)
+                    print(f"Waiting for selector {selector} to be hidden for up to {timeout} seconds", flush=True)
+                    WebDriverWait(driver, timeout).until(
+                        EC.invisibility_of_element_located((By.CSS_SELECTOR, selector))
+                    )
+
+                elif action == "wait_for_text":
+                    selector = task.get("selector")
+                    text = task.get("text")
+                    timeout = task.get("timeout", 10)
+                    print(f"Waiting for text '{text}' in {selector} for up to {timeout} seconds", flush=True)
+                    WebDriverWait(driver, timeout).until(
+                        EC.text_to_be_present_in_element((By.CSS_SELECTOR, selector), text)
                     )
 
                 elif action == "snapshot_page" or action == "snapshot":
