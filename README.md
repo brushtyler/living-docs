@@ -6,11 +6,13 @@
 
 ## Overview
 
-Living Docs is a coordinated pipeline that bridges the gap between codebase changes and documentation accuracy. All capabilities are consolidated into a single, high-level skill: **Living Docs**.
+Living Docs is a coordinated pipeline for Gemini CLI that bridges the gap between codebase changes and documentation accuracy.
+
+> **Note**: This tool is currently optimized for **Web-based UIs** only. It uses Selenium and Chrome to interact with the DOM. See [Future Roadmap](#future-roadmap) for other platforms.
 
 The pipeline automates three critical tasks:
 1.  **Code-to-Text**: Synchronizing technical logic and API changes with Markdown text.
-2.  **Code-to-Recipe**: Automatically discovering where UI components appear (URLs) and how to target them (CSS selectors).
+2.  **Visual Discovery**: Automatically identifying where UI components appear (URLs) and suggesting recipes for the AI to insert into your docs.
 3.  **UI-to-Snapshot**: Regenerating visual assets (screenshots) using a headless browser.
 
 ---
@@ -23,77 +25,33 @@ The pipeline automates three critical tasks:
 - **Google Chrome / Chromium**: Required for the visual snapshot engine (Selenium).
 
 ### Configuration
-A `living-docs-config.json` in your project root is **required** for visual synchronization. It must define your local development server's `base_url`.
+A `living-docs-config.json` in your project root is **required** for visual synchronization. It defines your local development server's `base_url`.
 
 ```json
-{
-  "base_url": "http://localhost:3000"
-}
+{ "base_url": "http://localhost:3000" }
 ```
-
-*If the configuration is missing, the AI agent is instructed to help you discover the correct URL and create the file.*
-
-### Installation
-To install the Living Docs skill into your Gemini CLI workspace:
-
-```bash
-gemini skills install living-docs/ --scope workspace
-/skills reload
-```
+See the [Configuration Guide](./living-docs/CONFIGURATION.md) for advanced flows and route mappings.
 
 ---
 
-## 2. How to Use the Pipeline
+## 2. Managing Snapshot Recipes
 
-### Standard Sync
-Simply ask the Gemini CLI:
-> "Update my documentation to reflect the latest changes in the codebase."
+Snapshot recipes tell the system how to capture a specific UI element. There are two ways to manage them:
 
-This single command triggers a coordinated workflow:
-- **Detection**: Identifies stale documents and relevant code changes.
-- **Text Sync**: Updates Markdown content with technical details.
-- **Visual Discovery**: Automatically suggests `snapshot-recipes` for new/updated UI components.
-- **Image Sync**: Triggers the visual capture of screenshots.
+### A. Automatic Discovery (AI-Driven)
+When you modify a UI component, ask the Gemini CLI:
+> "Update the documentation for the changes in Login.tsx"
 
-*Note: Visual synchronization requires your local development server to be running (e.g., `npm run dev`).*
+The AI will automatically:
+1.  **Resolve** the component to a URL (using your `mappings` or folder structure).
+2.  **Discover** the correct CSS selector for the component.
+3.  **Propose** a `snapshot-recipe` block for you to insert into your Markdown file.
 
----
+### B. Manual Definition
+You can manually add recipes by placing an HTML comment immediately after any image link:
 
-## 3. Project Configuration
-
-To enable advanced features or support custom frameworks, create a `living-docs-config.json` in your project root.
-
-```json
-{
-  "base_url": "http://localhost:3000",
-  "flows": {
-    "login": [
-      {"action": "goto", "url": "/login"},
-      {"action": "type", "selector": "#user", "text": "admin"},
-      {"action": "type", "selector": "#pass", "text": "password"},
-      {"action": "click", "selector": "#submit"},
-      {"action": "wait", "seconds": 2}
-    ]
-  },
-  "mappings": [
-    {
-      "description": "User Components",
-      "pattern": "src/components/user/(.*)\\.tsx",
-      "urls": ["/profile", "/settings"]
-    }
-  ]
-}
-```
-
----
-
-## 4. Preparing Your Documentation (Recipes)
-
-To enable **Visual Sync**, add a `snapshot-recipe` HTML comment immediately after an image link in your Markdown files.
-
-### Example Recipe
 ```markdown
-![Login Page](./assets/login.png)
+![Dashboard Page](./assets/dashboard.png)
 <!-- snapshot-recipe: {
   "prerequisites": ["login"],
   "tasks": [
@@ -102,10 +60,11 @@ To enable **Visual Sync**, add a `snapshot-recipe` HTML comment immediately afte
   ]
 } -->
 ```
+*See [Usage Guide](./living-docs/USAGE.md) for a full list of supported actions like `wait_for_hidden` and `type`.*
 
 ---
 
-## 5. Testing & Sandbox
+## 3. Testing & Sandbox
 
 We provide a **Sandbox Environment** to verify the pipeline.
 
@@ -118,6 +77,15 @@ We provide a **Sandbox Environment** to verify the pipeline.
 3.  **Verify**: Check `sandbox/docs/assets/sandbox.png` for the updated visual.
 
 For detailed test instructions, see [TESTING.md](./TESTING.md).
+
+---
+
+## 4. Future Roadmap
+
+We are working to expand Living Docs beyond the web:
+- **Desktop (Electron)**: Direct support for Electron app binaries.
+- **Mobile (Appium)**: Integration with mobile simulators for iOS/Android screenshots.
+- **Native Desktop**: Support for Windows/macOS native UI hierarchies via platform drivers.
 
 ---
 
