@@ -4,7 +4,7 @@ import sys
 import re
 
 class RouteResolver:
-    def __init__(self, root_dir=".", config_file="doc-sync-config.json"):
+    def __init__(self, root_dir=".", config_file="living-docs-config.json"):
         self.root_dir = root_dir
         self.config_path = os.path.join(root_dir, config_file)
         self.config = self._load_config()

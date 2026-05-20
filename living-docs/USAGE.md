@@ -1,6 +1,6 @@
-# Usage Guide: Web Snapshot Tool
+# Usage Guide: Living Docs
 
-The Web Snapshot Tool is a Selenium-powered browser automation script designed for AI agents to capture website components for documentation.
+Living Docs includes a Selenium-powered browser automation script designed for AI agents to capture website components for documentation.
 
 ## Installation
 

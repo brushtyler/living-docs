@@ -1,10 +1,10 @@
-# Integration Guide: Web Snapshot Skill
+# Integration Guide: Living Docs
 
-This document explains how to integrate the Web Snapshot tool into various AI-coding platforms.
+This document explains how to integrate the Living Docs toolkit into various AI-coding platforms.
 
 ## 1. Gemini CLI Integration
 
-The tool is packaged as a Gemini CLI skill, which is the native way to extend Gemini CLI.
+The Living Docs toolkit is packaged as a Gemini CLI skill, which is the native way to extend Gemini CLI.
 
 ### Installation
 ```bash

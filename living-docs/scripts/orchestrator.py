@@ -21,7 +21,15 @@ def run_command(cmd, description):
         return None
 
 def main():
+    # Parse arguments manually to keep it simple but support --config and --force-sync
     check_only = "--check-only" in sys.argv
+    force_sync = "--force-sync" in sys.argv
+    
+    config_path = "living-docs-config.json"
+    for i, arg in enumerate(sys.argv):
+        if arg == "--config" and i + 1 < len(sys.argv):
+            config_path = sys.argv[i+1]
+
     print("=== Living Docs: Unified Sync Manager ===")
     
     # 0. Check Environment
@@ -29,12 +37,12 @@ def main():
     git_ready = os.path.exists(".git")
     print(f"  [ {'OK' if git_ready else 'FAIL'} ] Git Repository")
     
-    config_path = "doc-sync-config.json"
     if os.path.exists(config_path):
         with open(config_path, "r") as f:
             cfg = json.load(f)
             base_url = cfg.get("base_url", "http://localhost:3000")
             print(f"  [ INFO ] Base URL: {base_url}")
+            print(f"  [ INFO ] Config: {config_path}")
     
     if check_only:
         print("\nReadiness check complete.")
@@ -83,25 +91,27 @@ def main():
             print("Failed to parse recipe check output.")
 
     # 3. Trigger UI Sync if needed or requested
-    if sync_needed or "--force-sync" in sys.argv:
+    if sync_needed or force_sync:
         print("\n>>> Triggering UI Documentation Sync...")
         
         updater_path = get_script_path("updater.py")
-        bot_wrapper = get_script_path("run_bot.sh")
         
-        if updater_path and bot_wrapper:
-            # We call the updater, which will internally use run_bot.sh
-            # The updater handles the bot path resolution itself now
+        if updater_path:
+            cmd = [sys.executable, updater_path]
+            if config_path != "living-docs-config.json":
+                cmd.extend(["--config", config_path])
+                
             sync_result = subprocess.run(
-                [sys.executable, updater_path],
+                cmd,
                 capture_output=False # Let it stream to console
             )
             if sync_result.returncode == 0:
                 print("\nSuccess: Documentation visuals synchronized.")
             else:
-                print("\nWarning: UI Sync failed. Ensure the local dev server is running.")
+                print("\nError: UI Sync failed. Ensure the local dev server is running.")
+                sys.exit(1)
         else:
-            print("\nError: Could not find updater or run_bot wrapper scripts. Skipping visual sync.")
+            print("\nError: Could not find updater script. Skipping visual sync.")
 
 if __name__ == "__main__":
     main()

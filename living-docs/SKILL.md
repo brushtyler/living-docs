@@ -45,5 +45,5 @@ To automate a screenshot, add a `snapshot-recipe` comment immediately after an i
 ## Setup & Prerequisites
 
 - **Virtual Environment**: The skill automatically manages its own `venv` in the skill directory.
-- **Local Server**: For UI snapshots to work, your local development server must be running (usually on port 3000 or as configured in `doc-sync-config.json`).
+- **Local Server**: For UI snapshots to work, your local development server must be running (usually on port 3000 or as configured in `living-docs-config.json`).
 - **Chrome**: Requires a local Chrome/Chromium installation for the Selenium bot.

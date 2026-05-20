@@ -50,7 +50,7 @@ This single command triggers a coordinated workflow:
 
 ## 3. Project Configuration
 
-To enable advanced features or support custom frameworks, create a `doc-sync-config.json` in your project root.
+To enable advanced features or support custom frameworks, create a `living-docs-config.json` in your project root.
 
 ```json
 {
@@ -103,7 +103,7 @@ We provide a **Sandbox Environment** to verify the pipeline.
     python3 sandbox/mock_server.py
     ```
 2.  **Trigger Sync**: Ask the CLI to "Update sandbox documentation". 
-    *(The agent will use `living-docs/scripts/orchestrator.py`, which looks for `doc-sync-config.json` in the root by default.)*
+    *(The agent will use `living-docs/scripts/orchestrator.py`, which looks for `living-docs-config.json` in the root by default.)*
 3.  **Verify**: Check `sandbox/docs/assets/sandbox.png` for the updated visual.
 
 For detailed test instructions, see [TESTING.md](./TESTING.md).

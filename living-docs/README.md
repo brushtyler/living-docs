@@ -1,10 +1,10 @@
-# Web Snapshot Skill
+# Living Docs: Browser Automation
 
-This skill allows Gemini CLI to automate browser interactions and capture screenshots of web pages or specific UI elements. It is powered by Selenium and designed to assist in documenting UI components, capturing form states, or visual regression testing.
+This component of the Living Docs toolkit allows Gemini CLI to automate browser interactions and capture screenshots of web pages or specific UI elements. It is powered by Selenium and designed to assist in documenting UI components, capturing form states, or visual regression testing.
 
 ## Aim
 
-The primary goal of this skill is to provide AI agents with a "visual" capability, enabling them to:
+The primary goal of this tool is to provide AI agents with a "visual" capability, enabling them to:
 - Capture full-page snapshots for documentation.
 - Target specific CSS selectors for component-level screenshots.
 - Perform multi-step interactions (click, type, wait) before capturing visuals.
@@ -22,7 +22,8 @@ The primary goal of this skill is to provide AI agents with a "visual" capabilit
 - Python 3.12+
 - Google Chrome or Chromium installed on the system.
 
-### Install as a Gemini CLI Skill
+### Install as part of Living Docs
+This tool is included in the [Living Docs](../) skill. To install the full toolkit:
 ```bash
 gemini skills install living-docs/ --scope workspace
 /skills reload

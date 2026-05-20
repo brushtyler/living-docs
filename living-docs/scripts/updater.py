@@ -34,8 +34,8 @@ def load_config(explicit_path=None, search_dir=None):
     # Search strategy: check search_dir, then CWD
     search_paths = []
     if search_dir:
-        search_paths.append(os.path.join(search_dir, "doc-sync-config.json"))
-    search_paths.append("doc-sync-config.json")
+        search_paths.append(os.path.join(search_dir, "living-docs-config.json"))
+    search_paths.append("living-docs-config.json")
 
     for path in search_paths:
         if os.path.exists(path):
@@ -97,7 +97,7 @@ def main():
     parser = argparse.ArgumentParser(description="Documentation Screenshot Updater")
     parser.add_argument("--dir", default=".", help="Directory to scan for Markdown files")
     parser.add_argument("--bot", help="Path to browser_bot.py (Legacy, no longer used as primary)")
-    parser.add_argument("--config", help="Explicit path to doc-sync-config.json")
+    parser.add_argument("--config", help="Explicit path to living-docs-config.json")
     parser.add_argument("--metadata", help="Path to save extracted UI metadata")
     args = parser.parse_args()
     
