@@ -29,14 +29,14 @@ cd web-doc-tools
 ```
 
 ### Technical Synchronization Checks
-The `doc-regen` and `doc-pipeline` scripts can be verified by running their respective commands with test data or the `--check-only` flag.
+The `doc-regen` (pipeline) and `doc-discovery` scripts can be verified by running their respective commands with test data or the `--check-only` flag.
 
 ```bash
 # Verify pipeline readiness
-python3 doc-pipeline/scripts/orchestrator.py --check-only
+python3 doc-regen/scripts/orchestrator.py --check-only
 
 # Verify recipe detection (requires a git repo)
-python3 doc-regen/scripts/git_helper.py check-recipes
+python3 doc-discovery/scripts/git_helper.py check-recipes
 ```
 
 ## 4. Common Pitfalls

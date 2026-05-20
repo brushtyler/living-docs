@@ -13,15 +13,20 @@ This repository provides a coordinated pipeline that bridges the gap between cod
 
 ### Key Skills
 
-#### [Doc Pipeline Orchestrator](./doc-pipeline)
-The "Master Skill". It coordinates the entire pipeline, bridging text updates and visual synchronization.
-- **Trigger**: "Run full doc sync", "Sync all documentation".
-- **Capabilities**: End-to-end synchronization and readiness auditing.
+#### [Documentation Regeneration Pipeline](./doc-regen)
+The "Master Skill" (Pipeline). It coordinates the entire ecosystem, bridging text updates, visual synchronization, and discovery.
+- **Trigger**: "Update documentation with latest changes", "Sync all documentation", "Update the user-guide document".
+- **Capabilities**: End-to-end synchronization, orchestration of text and visual updates.
 
-#### [Codebase Documentation Synchronizer](./doc-regen)
-The "Brain" of the pipeline. It uses Git history to detect stale documentation and orchestrates the update process.
-- **Trigger**: "Regen documentation", "Update docs based on recent changes".
-- **Capabilities**: Staleness detection, surgical text updates, and automated UI recipe generation.
+#### [Documentation Discovery](./doc-discovery)
+The "Analytical" layer. Bridges the gap between codebase and documentation by finding stale files and mapping them to UI routes.
+- **Trigger**: "Which docs are stale?", "Find the UI route for this component".
+- **Capabilities**: Staleness detection, route resolution, and CSS selector discovery.
+
+#### [Documentation Text Sync](./doc-sync)
+The "Technical" layer. Focuses on content accuracy by synchronizing Markdown text with code logic and API changes.
+- **Trigger**: "Sync code changes to markdown", "Update technical document text".
+- **Capabilities**: Surgical text updates and change extraction.
 
 #### [Web Documentation Tools](./web-doc-tools)
 The "Execution" layer for visual documentation.
@@ -49,8 +54,9 @@ For a detailed guide on how to prepare your project, see the [Adoption Guide](./
     
     Quick command (Installs Master Orchestrator + Supporting Skills):
     ```bash
-    gemini skills install doc-pipeline/ --scope workspace
-    gemini skills install doc-regen/doc-regen.skill --scope workspace
+    gemini skills install doc-regen/ --scope workspace
+    gemini skills install doc-sync/doc-sync.skill --scope workspace
+    gemini skills install doc-discovery/ --scope workspace
     gemini skills install web-doc-tools/ui-doc-sync.skill --scope workspace
     gemini skills install web-doc-tools/web-snapshot.skill --scope workspace
     /skills reload

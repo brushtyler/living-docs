@@ -34,11 +34,12 @@ Living Docs is composed of several specialized skills. For the best experience, 
 This installs all components needed for both text and visual synchronization.
 
 ```bash
-# Install the Master Orchestrator
-gemini skills install doc-pipeline/ --scope workspace
+# Install the Master Orchestrator (doc-regen)
+gemini skills install doc-regen/ --scope workspace
 
 # Install supporting skills
-gemini skills install doc-regen/doc-regen.skill --scope workspace
+gemini skills install doc-sync/doc-sync.skill --scope workspace
+gemini skills install doc-discovery/ --scope workspace
 gemini skills install web-doc-tools/ui-doc-sync.skill --scope workspace
 gemini skills install web-doc-tools/web-snapshot.skill --scope workspace
 
@@ -49,7 +50,9 @@ gemini skills install web-doc-tools/web-snapshot.skill --scope workspace
 ### Option B: Individual Component Installation
 If you only need specific capabilities, you can install skills individually.
 
-- **doc-regen**: Technical text synchronization.
+- **doc-regen**: Master orchestrator (Pipeline).
+- **doc-sync**: Technical text synchronization.
+- **doc-discovery**: Documentation staleness and mapping.
 - **ui-doc-sync**: Visual asset synchronization.
 - **web-snapshot**: Low-level browser automation.
 
@@ -59,7 +62,7 @@ After installing the skills, verify that the environment is ready:
 
 ```bash
 # Run the readiness check
-python3 doc-pipeline/scripts/orchestrator.py --check-only
+python3 doc-regen/scripts/orchestrator.py --check-only
 ```
 
 You should see an `[ OK ]` status for the Git Repository and a confirmed `Base URL`.

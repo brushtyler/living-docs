@@ -1,25 +1,25 @@
 {
   "name": "doc-regen",
-  "description": "Regenerate and synchronize documentation with the latest codebase changes using Git history.",
-  "version": "1.0.0",
+  "description": "Master orchestrator to update all documentation with the latest codebase changes. Coordinates text updates, visual UI snapshots, and documentation discovery.",
+  "version": "1.1.0",
   "actions": [
     {
-      "name": "regen technical documentation",
-      "description": "Identifies stale documentation and performs surgical updates to technical text based on code diffs. (Trigger: 'regen technical documentation', 'sync code changes to markdown')",
+      "name": "regenerate documentation",
+      "description": "Performs a complete synchronization: identifies stale docs, updates Markdown text, and refreshes UI screenshots. (Triggers: 'update the documentation', 'sync all docs', 'update the user-guide document', 'regen technical documentation')",
       "steps": [
         {
-          "command": "python3 doc-regen/scripts/git_helper.py staleness",
-          "description": "Analyzing documentation staleness and identifying relevant code changes."
+          "command": "python3 doc-regen/scripts/orchestrator.py",
+          "description": "Executing the unified Documentation Regeneration Pipeline."
         }
       ]
     },
     {
-      "name": "detect recipe changes",
-      "description": "Checks if any 'snapshot-recipe' blocks were recently added or modified, recommending a visual sync if needed.",
+      "name": "check documentation status",
+      "description": "Checks if the documentation is up to date with the codebase without making changes. (Triggers: 'is my documentation up to date?', 'check doc staleness')",
       "steps": [
         {
-          "command": "python3 doc-regen/scripts/git_helper.py check-recipes",
-          "description": "Scanning for recent recipe changes."
+          "command": "python3 doc-regen/scripts/orchestrator.py --check-only",
+          "description": "Verifying documentation readiness."
         }
       ]
     }
