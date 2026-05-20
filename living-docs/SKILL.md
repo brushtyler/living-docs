@@ -1,3 +1,8 @@
+---
+name: living-docs
+description: The complete Living Docs toolkit for discovery, technical synchronization, and automated UI snapshots.
+---
+
 # Living Docs Toolkit
 
 The `living-docs` skill is a comprehensive suite for keeping your documentation in sync with your codebase. It handles technical staleness detection, UI route resolution, and automated screenshot synchronization.
