@@ -21,6 +21,7 @@ The primary goal of this tool is to provide AI agents with a "visual" capability
 ### Prerequisites
 - Python 3.12+
 - Google Chrome or Chromium installed on the system.
+- A `living-docs-config.json` in the project root with a valid `base_url`.
 
 ### Install as part of Living Docs
 This tool is included in the [Living Docs](../) skill. To install the full toolkit:

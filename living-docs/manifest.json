@@ -1,6 +1,6 @@
 {
   "name": "living-docs",
-  "description": "The complete Living Docs toolkit for discovery, technical synchronization, and automated UI snapshots.",
+  "description": "Automates documentation updates, synchronization, and UI snapshots. Use this whenever you need to update or check documentation.",
   "version": "1.1.0",
   "actions": [
     {

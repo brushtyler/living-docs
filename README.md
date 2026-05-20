@@ -22,6 +22,17 @@ The pipeline automates three critical tasks:
 - **Python 3.12+**: Required for analysis and synchronization scripts.
 - **Google Chrome / Chromium**: Required for the visual snapshot engine (Selenium).
 
+### Configuration
+A `living-docs-config.json` in your project root is **required** for visual synchronization. It must define your local development server's `base_url`.
+
+```json
+{
+  "base_url": "http://localhost:3000"
+}
+```
+
+*If the configuration is missing, the AI agent is instructed to help you discover the correct URL and create the file.*
+
 ### Installation
 To install the Living Docs skill into your Gemini CLI workspace:
 
