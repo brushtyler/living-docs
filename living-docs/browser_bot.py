@@ -23,17 +23,17 @@ def setup_driver():
     driver = webdriver.Chrome(service=service, options=options)
     return driver
 
-def wait_for_network_idle(driver, timeout=10, idle_time=1.0):
+def wait_for_network_idle(driver, timeout=10, idle_time=0.5):
     """
     Wait for the network to be idle for at least idle_time seconds.
     Uses JavaScript performance entries to estimate network activity.
     """
-    print(f"Waiting for network idle (timeout: {timeout}s)...", flush=True)
-    # Small initial sleep to allow async requests to actually start
-    time.sleep(0.5)
+    # Shorter initial sleep for better responsiveness
+    time.sleep(0.1)
     
     start_time = time.time()
-    last_resource_count = -1
+    # Initialize last_resource_count with current count to return faster if no activity
+    last_resource_count = driver.execute_script("return window.performance.getEntriesByType('resource').length")
     last_activity_time = time.time()
     
     while time.time() - start_time < timeout:
@@ -45,11 +45,14 @@ def wait_for_network_idle(driver, timeout=10, idle_time=1.0):
             last_activity_time = time.time()
         
         # If no new resources for idle_time, we consider it idle
-        if time.time() - last_activity_time > idle_time:
-            print(f"Network idle reached (total wait: {time.time() - start_time:.2f}s)", flush=True)
+        if time.time() - last_activity_time >= idle_time:
+            # Only print if we actually waited more than the minimum
+            total_wait = time.time() - start_time
+            if total_wait > 0.2:
+                print(f"Network idle reached (total wait: {total_wait:.2f}s)", flush=True)
             return True
             
-        time.sleep(0.2)
+        time.sleep(0.1)
     
     print("Warning: Timed out waiting for network idle.", flush=True)
     return False
@@ -79,8 +82,8 @@ def execute_tasks(driver, task_input, metadata_output=None):
                     url = task.get("url")
                     print(f"Navigating to {url}", flush=True)
                     driver.get(url)
-                    # Always wait for network idle after navigation
-                    wait_for_network_idle(driver)
+                    # Use a safer idle_time for navigation
+                    wait_for_network_idle(driver, idle_time=0.8)
 
                 elif action == "click":
                     selector = task.get("selector")
@@ -89,8 +92,8 @@ def execute_tasks(driver, task_input, metadata_output=None):
                         EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
                     )
                     element.click()
-                    # Wait for network idle after interaction
-                    wait_for_network_idle(driver)
+                    # Wait for network idle with medium threshold
+                    wait_for_network_idle(driver, idle_time=0.4)
 
                 elif action == "type":
                     selector = task.get("selector")
@@ -101,8 +104,8 @@ def execute_tasks(driver, task_input, metadata_output=None):
                     )
                     element.clear()
                     element.send_keys(text)
-                    # Wait for network idle after interaction
-                    wait_for_network_idle(driver)
+                    # Short idle time for typing (likely no network or just a small JSON fetch)
+                    wait_for_network_idle(driver, idle_time=0.2)
 
                 elif action == "wait":
                     seconds = task.get("seconds", 1)
@@ -135,8 +138,8 @@ def execute_tasks(driver, task_input, metadata_output=None):
                     )
 
                 elif action == "snapshot_page" or action == "snapshot":
-                    # Wait for network idle before taking snapshot if it wasn't just a goto
-                    wait_for_network_idle(driver)
+                    # Wait for network idle before taking snapshot
+                    wait_for_network_idle(driver, idle_time=0.5)
                     filename = task.get("filename", "screenshot.png")
                     print(f"Saving full page snapshot to {filename}", flush=True)
                     # Ensure directory exists
@@ -146,7 +149,7 @@ def execute_tasks(driver, task_input, metadata_output=None):
 
                 elif action == "snapshot_element":
                     # Wait for network idle before taking snapshot
-                    wait_for_network_idle(driver)
+                    wait_for_network_idle(driver, idle_time=0.5)
                     selector = task.get("selector")
                     filename = task.get("filename", "element.png")
                     print(f"Saving element snapshot ({selector}) to {filename}", flush=True)
