@@ -16,9 +16,9 @@ This skill helps maintain documentation accuracy by identifying which parts of y
 ## How to Use
 
 Trigger this skill when you want to ensure your documentation matches your implementation. Common triggers:
-- "Regen documentation"
-- "Update README for recent changes"
-- "Check if any docs are out of date"
+- "Regen technical documentation"
+- "Sync code changes to markdown"
+- "Check for technical doc staleness"
 
 ### Workflow
 

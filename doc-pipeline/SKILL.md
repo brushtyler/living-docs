@@ -16,8 +16,9 @@ This skill provides a unified interface for the entire Living Docs ecosystem. It
 ## When to Use
 
 Trigger this skill when you want to ensure the *entire* documentation set is accurate, both in text and visuals.
-- "Run full doc sync"
+- "Update documentation with recent changes"
 - "Sync all documentation"
+- "Run full doc sync"
 - "Check if the doc pipeline is ready"
 
 ## How it Works

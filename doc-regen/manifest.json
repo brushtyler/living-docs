@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "actions": [
     {
-      "name": "regen documentation",
-      "description": "Identifies stale documentation and updates it based on recent code changes. (Trigger: 'regen documentation', 'update docs')",
+      "name": "regen technical documentation",
+      "description": "Identifies stale documentation and performs surgical updates to technical text based on code diffs. (Trigger: 'regen technical documentation', 'sync code changes to markdown')",
       "steps": [
         {
           "command": "python3 doc-regen/scripts/git_helper.py staleness",

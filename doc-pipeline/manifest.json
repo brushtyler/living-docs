@@ -5,7 +5,7 @@
   "actions": [
     {
       "name": "sync full pipeline",
-      "description": "Performs a complete synchronization: checks for stale code, updates text, detects recipe changes, and refreshes UI screenshots. (Trigger: 'run full doc sync', 'sync all docs')",
+      "description": "Performs a complete synchronization: checks for stale code, updates text, detects recipe changes, and refreshes UI screenshots. (Trigger: 'update documentation with latest changes', 'run full doc sync', 'sync all docs')",
       "steps": [
         {
           "command": "python3 doc-pipeline/scripts/orchestrator.py",
