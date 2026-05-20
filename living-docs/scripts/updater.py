@@ -117,7 +117,7 @@ def main():
 
     print(f"Found {len(all_recipes)} recipes in {len(md_files)} files.")
     
-    master_tasks = []
+    master_batches = []
     
     for i, recipe in enumerate(all_recipes):
         md_dir = os.path.dirname(recipe['file'])
@@ -128,7 +128,7 @@ def main():
         if img_dir and not os.path.exists(img_dir):
             os.makedirs(img_dir)
             
-        # Expand tasks
+        # Expand tasks for this recipe
         recipe_tasks = []
         
         # 1. Add flow tasks from prerequisites if they exist in config
@@ -140,6 +140,7 @@ def main():
         recipe_tasks.extend(recipe["tasks"])
         
         # Adjust tasks (resolve URLs and filenames)
+        adjusted_recipe_tasks = []
         for task in recipe_tasks:
             new_task = task.copy()
             
@@ -147,14 +148,23 @@ def main():
             if 'url' in new_task and new_task['url'].startswith("/") and base_url:
                 new_task['url'] = base_url + new_task['url']
                 
-            # Resolve filenames relative to MD file
+            # Resolve filenames relative to MD file and normalize
             if 'filename' in new_task:
-                new_task['filename'] = os.path.join(md_dir, new_task['filename'])
+                # Get the raw filename from the task
+                raw_filename = new_task['filename']
+                # If it's already an absolute path, leave it
+                if not os.path.isabs(raw_filename):
+                    # Resolve relative to the Markdown file's directory
+                    resolved_path = os.path.join(md_dir, raw_filename)
+                    # Normalize to remove redundant ./ or ../ and clarify the final path
+                    new_task['filename'] = os.path.normpath(resolved_path)
             
-            master_tasks.append(new_task)
+            adjusted_recipe_tasks.append(new_task)
+        
+        master_batches.append(adjusted_recipe_tasks)
 
-    if master_tasks:
-        result = run_bot(master_tasks, args.metadata)
+    if master_batches:
+        result = run_bot(master_batches, args.metadata)
         
         if result.returncode != 0:
             print(f"Error updating screenshots: {result.stderr}")
