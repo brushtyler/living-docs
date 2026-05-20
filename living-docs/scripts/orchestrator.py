@@ -3,27 +3,12 @@ import sys
 import os
 import json
 
-def find_script_path(skill_name, relative_path, dev_fallback_paths=None):
-    # 1. Try finding in the sibling directory (under .gemini/skills or .agents/skills or development setup)
-    try:
-        skills_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        path = os.path.join(skills_dir, skill_name, relative_path)
-        if os.path.exists(path):
-            return path
-    except Exception:
-        pass
-
-    # 2. Try directly relative to the current working directory
-    fallback_path = os.path.join(skill_name, relative_path)
-    if os.path.exists(fallback_path):
-        return fallback_path
-
-    # 3. Try dev fallback paths relative to CWD
-    if dev_fallback_paths:
-        for dev_path in dev_fallback_paths:
-            if os.path.exists(dev_path):
-                return dev_path
-
+def get_script_path(script_name):
+    """Get the path to a script in the same directory as this orchestrator."""
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(script_dir, script_name)
+    if os.path.exists(path):
+        return path
     return None
 
 def run_command(cmd, description):
@@ -56,9 +41,9 @@ def main():
         return
 
     # Find git_helper.py
-    git_helper_path = find_script_path("doc-discovery", "scripts/git_helper.py")
+    git_helper_path = get_script_path("git_helper.py")
     if not git_helper_path:
-        print("Error: Could not find doc-discovery git_helper.py script.")
+        print("Error: Could not find git_helper.py script.")
         sys.exit(1)
 
     # 1. Check for staleness
@@ -101,27 +86,14 @@ def main():
     if sync_needed or "--force-sync" in sys.argv:
         print("\n>>> Triggering UI Documentation Sync...")
         
-        updater_path = find_script_path("ui-doc-sync", "scripts/updater.py", [
-            "web-doc-tools/skills/ui-doc-sync/scripts/updater.py"
-        ])
-        bot_path = find_script_path("web-snapshot", "scripts/browser_bot.py", [
-            "web-doc-tools/browser_bot.py"
-        ])
+        updater_path = get_script_path("updater.py")
+        bot_wrapper = get_script_path("run_bot.sh")
         
-        if updater_path and bot_path:
-            # Try to use the venv if it exists, else use current python
-            python_bin = "web-doc-tools/venv/bin/python3"
-            if not os.path.exists(python_bin):
-                # check if there's a venv in the sibling ui-doc-sync folder
-                ui_doc_sync_dir = os.path.dirname(os.path.dirname(updater_path))
-                sibling_python_bin = os.path.join(ui_doc_sync_dir, "venv", "bin", "python3")
-                if os.path.exists(sibling_python_bin):
-                    python_bin = sibling_python_bin
-                else:
-                    python_bin = sys.executable
-                
+        if updater_path and bot_wrapper:
+            # We call the updater, which will internally use run_bot.sh
+            # The updater handles the bot path resolution itself now
             sync_result = subprocess.run(
-                [python_bin, updater_path, "--bot", bot_path],
+                [sys.executable, updater_path],
                 capture_output=False # Let it stream to console
             )
             if sync_result.returncode == 0:
@@ -129,7 +101,7 @@ def main():
             else:
                 print("\nWarning: UI Sync failed. Ensure the local dev server is running.")
         else:
-            print("\nError: Could not find ui-doc-sync or browser_bot scripts. Skipping visual sync.")
+            print("\nError: Could not find updater or run_bot wrapper scripts. Skipping visual sync.")
 
 if __name__ == "__main__":
     main()

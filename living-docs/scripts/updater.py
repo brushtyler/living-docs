@@ -72,16 +72,20 @@ def extract_recipes(md_file_path):
             
     return recipes
 
-def run_bot(bot_path, tasks, output_metadata=None):
+def run_bot(tasks, output_metadata=None):
     tasks_file = "temp_tasks.json"
     with open(tasks_file, "w") as f:
         json.dump(tasks, f)
     
-    cmd = [sys.executable, bot_path, "--tasks", tasks_file]
+    # Use the run_bot.sh wrapper located in the same scripts directory
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    run_bot_path = os.path.join(script_dir, "run_bot.sh")
+    
+    cmd = ["bash", run_bot_path, "--tasks", tasks_file]
     if output_metadata:
         cmd.extend(["--output-metadata", output_metadata])
     
-    print(f"Running bot with {len(tasks)} tasks...")
+    print(f"Running bot with {len(tasks)} tasks via {run_bot_path}...")
     result = subprocess.run(cmd, capture_output=True, text=True)
     
     if os.path.exists(tasks_file):
@@ -92,7 +96,7 @@ def run_bot(bot_path, tasks, output_metadata=None):
 def main():
     parser = argparse.ArgumentParser(description="Documentation Screenshot Updater")
     parser.add_argument("--dir", default=".", help="Directory to scan for Markdown files")
-    parser.add_argument("--bot", required=True, help="Path to browser_bot.py")
+    parser.add_argument("--bot", help="Path to browser_bot.py (Legacy, no longer used as primary)")
     parser.add_argument("--config", help="Explicit path to doc-sync-config.json")
     parser.add_argument("--metadata", help="Path to save extracted UI metadata")
     args = parser.parse_args()
@@ -150,7 +154,7 @@ def main():
             master_tasks.append(new_task)
 
     if master_tasks:
-        result = run_bot(args.bot, master_tasks, args.metadata)
+        result = run_bot(master_tasks, args.metadata)
         
         if result.returncode != 0:
             print(f"Error updating screenshots: {result.stderr}")

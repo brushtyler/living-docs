@@ -4,142 +4,110 @@
 
 *Documentation that stays in sync with code logic and UI visuals.*
 
-## The Unified Documentation Pipeline
+## Overview
 
-This repository provides a coordinated pipeline that bridges the gap between codebase changes and documentation accuracy. The pipeline automates three critical tasks:
+Living Docs is a coordinated pipeline that bridges the gap between codebase changes and documentation accuracy. All capabilities are consolidated into a single, high-level skill: **Living Docs**.
+
+The pipeline automates three critical tasks:
 1.  **Code-to-Text**: Synchronizing technical logic and API changes with Markdown text.
 2.  **Code-to-Recipe**: Automatically discovering where UI components appear (URLs) and how to target them (CSS selectors).
 3.  **UI-to-Snapshot**: Regenerating visual assets (screenshots) using a headless browser.
 
-### Key Skills
-
-#### [Documentation Regeneration Pipeline](./doc-regen)
-The "Master Skill" (Pipeline). It coordinates the entire ecosystem, bridging text updates, visual synchronization, and discovery.
-- **Trigger**: "Update documentation with latest changes", "Sync all documentation", "Update the user-guide document".
-- **Capabilities**: End-to-end synchronization, orchestration of text and visual updates.
-
-#### [Documentation Discovery](./doc-discovery)
-The "Analytical" layer. Bridges the gap between codebase and documentation by finding stale files and mapping them to UI routes.
-- **Trigger**: "Which docs are stale?", "Find the UI route for this component".
-- **Capabilities**: Staleness detection, route resolution, and CSS selector discovery.
-
-#### [Documentation Text Sync](./doc-sync)
-The "Technical" layer. Focuses on content accuracy by synchronizing Markdown text with code logic and API changes.
-- **Trigger**: "Sync code changes to markdown", "Update technical document text".
-- **Capabilities**: Surgical text updates and change extraction.
-
-#### [Web Documentation Tools](./web-doc-tools)
-The "Execution" layer for visual documentation.
-- **Web Snapshot**: A browser-automation engine powered by Selenium.
-- **UI Doc Sync**: Scans documentation for `snapshot-recipe` blocks and refreshes image assets.
-
 ---
 
-## Project Adoption & Requirements
+## 1. Prerequisites & Setup
 
-Living Docs is built for **web projects under active development** within the current working directory. It is designed to work as you build, ensuring that documentation is never more than one command away from the latest code.
+### System Requirements
+- **Git**: Your project must be a Git repository (used for change detection).
+- **Python 3.12+**: Required for analysis and synchronization scripts.
+- **Google Chrome / Chromium**: Required for the visual snapshot engine (Selenium).
 
-- **Supported Frontends**: Built-in support for **Next.js** (App & Pages router). Extensible to **React, Vue, Angular, Svelte**, and more via custom configuration.
-- **Git Integration**: Requires a Git repository for historical change detection.
-- **Environment**: Requires Python 3.12+, Google Chrome, and a running local dev server for visual updates.
-
-For a detailed guide on how to prepare your project, see the [Adoption Guide](./ADOPTION.md).
-
----
-
-## How to Use the Pipeline
-
-1.  **Installation**:
-    For detailed setup instructions, including system requirements and virtual environment preparation, see the [Installation Guide](./INSTALL.md).
-    
-    Quick command (Installs Master Orchestrator + Supporting Skills):
-    ```bash
-    gemini skills install doc-regen/ --scope workspace
-    gemini skills install doc-sync/doc-sync.skill --scope workspace
-    gemini skills install doc-discovery/ --scope workspace
-    gemini skills install web-doc-tools/ui-doc-sync.skill --scope workspace
-    gemini skills install web-doc-tools/web-snapshot.skill --scope workspace
-    /skills reload
-    ```
-
-2.  **Standard Sync**: Simply ask the Gemini CLI:
-    > "Update my documentation to reflect the latest changes in the codebase."
-    
-    This single command triggers a coordinated workflow:
-    - **Detection**: Identifies stale documents and relevant code changes.
-    - **Text Sync**: Updates the Markdown content with technical details.
-    - **Visual Discovery**: Automatically suggests `snapshot-recipes` for new/updated UI components.
-    - **Image Sync**: Triggers the visual capture of screenshots (if a local dev server is running).
-    
-    *Note: If you have UI components, ensure your local dev server is running (e.g., `npm run dev` or the mock server) so the pipeline can capture screenshots.*
-
-3.  **Extensible Mapping**: To support custom frameworks (non-Next.js), create a `doc-sync-config.json` in your project root:
-    ```json
-    {
-      "base_url": "http://localhost:3000",
-      "mappings": [
-        {
-          "pattern": "src/components/(.*)\\.tsx",
-          "urls": ["/preview/{1}"]
-        }
-      ]
-    }
-    ```
-
----
-
-## Testing & Sandbox
-
-We provide a **Sandbox Environment** and a comprehensive test suite to verify the pipeline. For detailed instructions on running integration tests, see the [Testing Guide](./TESTING.md).
-
-### Running the Sandbox Test
-
-1.  **Initial Setup** (First time only):
-    ```bash
-    virtualenv sandbox/venv
-    sandbox/venv/bin/pip install -r sandbox/requirements.txt
-    ```
-
-2.  **Start the Mock Server**:
-    ```bash
-    sandbox/venv/bin/python3 sandbox/mock_server.py
-    ```
-
-3.  **Modify a Component**: Change a color or text in `sandbox/app/page.tsx`.
-
-4.  **Trigger Sync**: Ask the CLI to "Update sandbox documentation".
-
-5.  **Verify**: Check `sandbox/docs/assets/sandbox.png` for the updated visual.
-
----
-
-## How to Install a Skill
-
-To install a skill from this repository, use the `gemini skills install` command pointing to the `.skill` file of the desired skill.
-
-Example for the Web Snapshot skill:
+### Installation
+To install the Living Docs skill into your Gemini CLI workspace:
 
 ```bash
-gemini skills install web-doc-tools/web-snapshot.skill --scope workspace
-```
-
-After installation, you can reload the skills in your Gemini CLI session:
-
-```bash
+gemini skills install living-docs/ --scope workspace
 /skills reload
 ```
 
 ---
 
-## Contributing
+## 2. How to Use the Pipeline
 
-We welcome contributions of new skills! To add a new skill:
+### Standard Sync
+Simply ask the Gemini CLI:
+> "Update my documentation to reflect the latest changes in the codebase."
 
-1. Create a new directory for your skill.
-2. Follow the standard skill structure (including `SKILL.md`, scripts, and necessary assets).
-3. Package your skill into a `.skill` file.
-4. Provide a `README.md` within the skill directory.
-5. Update this root `README.md` to include your skill in the "Available Skills" list.
+This single command triggers a coordinated workflow:
+- **Detection**: Identifies stale documents and relevant code changes.
+- **Text Sync**: Updates Markdown content with technical details.
+- **Visual Discovery**: Automatically suggests `snapshot-recipes` for new/updated UI components.
+- **Image Sync**: Triggers the visual capture of screenshots.
+
+*Note: Visual synchronization requires your local development server to be running (e.g., `npm run dev`).*
+
+---
+
+## 3. Project Configuration
+
+To enable advanced features or support custom frameworks, create a `doc-sync-config.json` in your project root.
+
+```json
+{
+  "base_url": "http://localhost:3000",
+  "flows": {
+    "login": [
+      {"action": "goto", "url": "/login"},
+      {"action": "type", "selector": "#user", "text": "admin"},
+      {"action": "type", "selector": "#pass", "text": "password"},
+      {"action": "click", "selector": "#submit"},
+      {"action": "wait", "seconds": 2}
+    ]
+  },
+  "mappings": [
+    {
+      "description": "User Components",
+      "pattern": "src/components/user/(.*)\\.tsx",
+      "urls": ["/profile", "/settings"]
+    }
+  ]
+}
+```
+
+---
+
+## 4. Preparing Your Documentation (Recipes)
+
+To enable **Visual Sync**, add a `snapshot-recipe` HTML comment immediately after an image link in your Markdown files.
+
+### Example Recipe
+```markdown
+![Login Page](./assets/login.png)
+<!-- snapshot-recipe: {
+  "prerequisites": ["login"],
+  "tasks": [
+    {"action": "goto", "url": "/dashboard"},
+    {"action": "snapshot_element", "selector": "#dashboard-header", "filename": "assets/dashboard.png"}
+  ]
+} -->
+```
+
+---
+
+## 5. Testing & Sandbox
+
+We provide a **Sandbox Environment** to verify the pipeline.
+
+1.  **Start the Mock Server**:
+    ```bash
+    python3 sandbox/mock_server.py
+    ```
+2.  **Trigger Sync**: Ask the CLI to "Update sandbox documentation".
+3.  **Verify**: Check `sandbox/docs/assets/sandbox.png` for the updated visual.
+
+For detailed test instructions, see [TESTING.md](./TESTING.md).
+
+---
 
 ## License
 

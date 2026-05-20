@@ -4,11 +4,11 @@ This document explains how to integrate the Web Snapshot tool into various AI-co
 
 ## 1. Gemini CLI Integration
 
-The tool is packaged as a `.skill` file, which is the native way to extend Gemini CLI.
+The tool is packaged as a Gemini CLI skill, which is the native way to extend Gemini CLI.
 
 ### Installation
 ```bash
-gemini skills install web-doc-tools/web-snapshot.skill --scope workspace
+gemini skills install living-docs/ --scope workspace
 ```
 
 ### Usage
@@ -16,7 +16,7 @@ Once installed, reload the skills:
 ```bash
 /skills reload
 ```
-The AI will now automatically detect the `web-snapshot` skill when you ask it to "take a screenshot of a component" or "document this web page".
+The AI will now automatically detect the `living-docs` skill when you ask it to "take a screenshot of a component" or "document this web page".
 
 ## 2. MCP-compatible Tools (Claude Desktop, Windsurf, Cursor)
 

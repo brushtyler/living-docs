@@ -24,7 +24,7 @@ The primary goal of this skill is to provide AI agents with a "visual" capabilit
 
 ### Install as a Gemini CLI Skill
 ```bash
-gemini skills install web-doc-tools/web-snapshot.skill --scope workspace
+gemini skills install living-docs/ --scope workspace
 /skills reload
 ```
 
@@ -61,7 +61,7 @@ Tasks are defined in a JSON array. Example `tasks.json`:
 ## Development
 
 - `browser_bot.py`: The core Selenium script.
-- `web-doc-tools/skills/web-snapshot/SKILL.md`: Skill definition and documentation.
+- `living-docs/SKILL.md`: Skill definition and documentation.
 - `tests/`: Integration tests using a mock server.
 
 For more details on integration, see [INTEGRATION.md](./INTEGRATION.md).

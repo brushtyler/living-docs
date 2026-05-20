@@ -1,1 +1,0 @@
-[{"action": "goto", "url": "http://localhost:5000"}, {"action": "click", "selector": "#non-existent"}]

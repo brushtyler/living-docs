@@ -2,6 +2,9 @@
 # run_bot.sh - Wrapper to run browser_bot.py in a virtual environment
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+# In the unified skill, browser_bot.py is in the parent of scripts/
+BOT_PATH="$SCRIPT_DIR/../browser_bot.py"
+# Shared venv is in the parent of scripts/
 VENV_DIR="$SCRIPT_DIR/../venv"
 
 if [ ! -d "$VENV_DIR" ]; then
@@ -13,4 +16,4 @@ else
     source "$VENV_DIR/bin/activate"
 fi
 
-python3 "$SCRIPT_DIR/browser_bot.py" "$@"
+python3 "$BOT_PATH" "$@"
