@@ -102,7 +102,8 @@ We provide a **Sandbox Environment** to verify the pipeline.
     ```bash
     python3 sandbox/mock_server.py
     ```
-2.  **Trigger Sync**: Ask the CLI to "Update sandbox documentation".
+2.  **Trigger Sync**: Ask the CLI to "Update sandbox documentation". 
+    *(The agent will use `living-docs/scripts/orchestrator.py`, which looks for `doc-sync-config.json` in the root by default.)*
 3.  **Verify**: Check `sandbox/docs/assets/sandbox.png` for the updated visual.
 
 For detailed test instructions, see [TESTING.md](./TESTING.md).
