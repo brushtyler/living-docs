@@ -22,12 +22,46 @@ Trigger this skill for any general request to update or synchronize documentatio
 - "Regen technical and user docs"
 - "Is my documentation up to date?"
 
-## How it Works
+## Agent Workflow Instructions
 
-The pipeline follows a multi-stage process:
-1.  **Discovery**: Uses `doc-discovery` to find stale documentation and map code changes to relevant UI routes.
-2.  **Text Sync**: Triggers `doc-sync` to update Markdown text with new code logic and variable names.
-3.  **Visual Sync**: Triggers `ui-doc-sync` to capture new screenshots for modified UI components or explicitly defined recipes.
+When tasked with updating documentation, you MUST follow this sequence:
+
+1.  **Discovery & Staleness**: 
+    - Identify stale documents and relevant changed files using the `doc-discovery` skill.
+    ```bash
+    python3 doc-discovery/scripts/git_helper.py staleness
+    ```
+    - Fetch the specific code diffs for the affected document.
+
+2.  **Text Synchronization**: 
+    - Surgically update the Markdown text to reflect the new code logic, API changes, and variable names based on the diffs.
+
+3.  **Visual Sync Preparation (Recipe Generation)**:
+    If the modified files involve UI components (e.g., `.tsx`, `.jsx`, `.html`):
+    - Use the Route Resolver to find where the component can be viewed:
+      ```bash
+      python3 doc-discovery/scripts/resolver.py <ui_file_path>
+      ```
+    - Use the Discovery Helper to suggest selectors and names:
+      ```bash
+      python3 doc-discovery/scripts/discovery_helper.py <ui_file_path>
+      ```
+    - **Crucial Step**: Search the documentation for existing images related to this component. If visuals need updating or adding, you MUST add/update a `snapshot-recipe` comment immediately after the Markdown image link.
+      ```markdown
+      ![Component Name](./assets/filename.png)
+      <!-- snapshot-recipe: {
+        "tasks": [
+          {"action": "goto", "url": "RESOLVED_URL"},
+          {"action": "snapshot_element", "selector": "SUGGESTED_SELECTOR", "filename": "assets/filename.png"}
+        ]
+      } -->
+      ```
+
+4.  **Pipeline Execution**:
+    After you have updated the text and modified the recipes in the `.md` file, you MUST trigger the final orchestrator script to apply the visual synchronization.
+    ```bash
+    python3 doc-regen/scripts/orchestrator.py --force-sync
+    ```
 
 ## Best Practices
 
