@@ -55,7 +55,37 @@ To automate a screenshot, add a `snapshot-recipe` comment immediately after an i
 } -->
 ```
 
-## Setup & Prerequisites
+## Agent Workflow Instructions
+
+When tasked with updating documentation, you MUST follow this sequence to ensure both technical and visual accuracy:
+
+1.  **Discovery & Staleness**: 
+    - Identify stale documents and relevant changed files using the `check_staleness` action (or `scripts/git_helper.py staleness`).
+    - Fetch the specific code diffs for the affected document.
+
+2.  **Text Synchronization**: 
+    - Surgically update the Markdown text to reflect the new code logic, API changes, and variable names based on the diffs.
+
+3.  **Visual Sync Preparation (Recipe Generation)**:
+    If the modified files involve UI components (e.g., `.tsx`, `.jsx`, `.html`):
+    - **Resolve Route**: Use the `resolve_route` action (or `scripts/resolver.py`) to find where the component can be viewed.
+    - **Suggest Selectors**: Use `scripts/discovery_helper.py` to suggest CSS selectors for the component.
+    - **Update Recipes**: Search the documentation for existing images related to this component. If visuals need updating or adding, you MUST add/update a `snapshot-recipe` comment immediately after the Markdown image link.
+      ```markdown
+      ![Component Name](./assets/filename.png)
+      <!-- snapshot-recipe: {
+        "tasks": [
+          {"action": "goto", "url": "RESOLVED_URL"},
+          {"action": "snapshot_element", "selector": "SUGGESTED_SELECTOR", "filename": "assets/filename.png"}
+        ]
+      } -->
+      ```
+
+4.  **Pipeline Execution**:
+    After you have updated the text and modified the recipes in the `.md` file, you MUST trigger the final synchronization to apply the visual changes.
+    - Run the `regen_all` action with `force=true` (or `scripts/orchestrator.py --force-sync`).
+
+## Best Practices
 
 - **Virtual Environment**: The skill automatically manages its own `venv` in the skill directory.
 - **Local Server**: For UI snapshots to work, your local development server must be running (usually on port 3000 or as configured in `living-docs-config.json`).
