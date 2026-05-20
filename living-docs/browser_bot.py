@@ -28,7 +28,7 @@ def wait_for_network_idle(driver, timeout=10, idle_time=1.0):
     Wait for the network to be idle for at least idle_time seconds.
     Uses JavaScript performance entries to estimate network activity.
     """
-    print(f"Waiting for network idle (timeout: {timeout}s)...")
+    print(f"Waiting for network idle (timeout: {timeout}s)...", flush=True)
     start_time = time.time()
     last_resource_count = -1
     last_activity_time = time.time()
@@ -43,12 +43,12 @@ def wait_for_network_idle(driver, timeout=10, idle_time=1.0):
         
         # If no new resources for idle_time, we consider it idle
         if time.time() - last_activity_time > idle_time:
-            print(f"Network idle reached (total wait: {time.time() - start_time:.2f}s)")
+            print(f"Network idle reached (total wait: {time.time() - start_time:.2f}s)", flush=True)
             return True
             
         time.sleep(0.2)
     
-    print("Warning: Timed out waiting for network idle.")
+    print("Warning: Timed out waiting for network idle.", flush=True)
     return False
 
 def execute_tasks(driver, task_input, metadata_output=None):
@@ -64,7 +64,7 @@ def execute_tasks(driver, task_input, metadata_output=None):
         batches = task_input
 
     for batch_idx, tasks in enumerate(batches):
-        print(f"\n--- Executing Batch {batch_idx + 1}/{len(batches)} ({len(tasks)} tasks) ---")
+        print(f"\n--- Executing Batch {batch_idx + 1}/{len(batches)} ({len(tasks)} tasks) ---", flush=True)
         batch_failed = False
         for task in tasks:
             if batch_failed:
@@ -74,14 +74,14 @@ def execute_tasks(driver, task_input, metadata_output=None):
             try:
                 if action == "goto":
                     url = task.get("url")
-                    print(f"Navigating to {url}")
+                    print(f"Navigating to {url}", flush=True)
                     driver.get(url)
                     # Always wait for network idle after navigation
                     wait_for_network_idle(driver)
 
                 elif action == "click":
                     selector = task.get("selector")
-                    print(f"Clicking {selector}")
+                    print(f"Clicking {selector}", flush=True)
                     element = WebDriverWait(driver, 10).until(
                         EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
                     )
@@ -90,7 +90,7 @@ def execute_tasks(driver, task_input, metadata_output=None):
                 elif action == "type":
                     selector = task.get("selector")
                     text = task.get("text")
-                    print(f"Typing '{text}' into {selector}")
+                    print(f"Typing '{text}' into {selector}", flush=True)
                     element = WebDriverWait(driver, 10).until(
                         EC.presence_of_element_located((By.CSS_SELECTOR, selector))
                     )
@@ -99,13 +99,13 @@ def execute_tasks(driver, task_input, metadata_output=None):
 
                 elif action == "wait":
                     seconds = task.get("seconds", 1)
-                    print(f"Waiting for {seconds} seconds")
+                    print(f"Waiting for {seconds} seconds", flush=True)
                     time.sleep(seconds)
 
                 elif action == "wait_for_selector":
                     selector = task.get("selector")
                     timeout = task.get("timeout", 10)
-                    print(f"Waiting for selector {selector} for up to {timeout} seconds")
+                    print(f"Waiting for selector {selector} for up to {timeout} seconds", flush=True)
                     WebDriverWait(driver, timeout).until(
                         EC.presence_of_element_located((By.CSS_SELECTOR, selector))
                     )
@@ -114,7 +114,7 @@ def execute_tasks(driver, task_input, metadata_output=None):
                     # Wait for network idle before taking snapshot if it wasn't just a goto
                     wait_for_network_idle(driver)
                     filename = task.get("filename", "screenshot.png")
-                    print(f"Saving full page snapshot to {filename}")
+                    print(f"Saving full page snapshot to {filename}", flush=True)
                     # Ensure directory exists
                     os.makedirs(os.path.dirname(os.path.abspath(filename)), exist_ok=True)
                     if not driver.save_screenshot(filename):
@@ -125,7 +125,7 @@ def execute_tasks(driver, task_input, metadata_output=None):
                     wait_for_network_idle(driver)
                     selector = task.get("selector")
                     filename = task.get("filename", "element.png")
-                    print(f"Saving element snapshot ({selector}) to {filename}")
+                    print(f"Saving element snapshot ({selector}) to {filename}", flush=True)
                     # Ensure directory exists
                     os.makedirs(os.path.dirname(os.path.abspath(filename)), exist_ok=True)
                     element = WebDriverWait(driver, 10).until(
@@ -136,7 +136,7 @@ def execute_tasks(driver, task_input, metadata_output=None):
 
                 elif action == "extract_info":
                     selector = task.get("selector")
-                    print(f"Extracting info from {selector}")
+                    print(f"Extracting info from {selector}", flush=True)
                     element = WebDriverWait(driver, 10).until(
                         EC.presence_of_element_located((By.CSS_SELECTOR, selector))
                     )
@@ -153,13 +153,13 @@ def execute_tasks(driver, task_input, metadata_output=None):
                     metadata.append(info)
 
                 else:
-                    print(f"Unknown action: {action}")
+                    print(f"Unknown action: {action}", flush=True)
 
             except (TimeoutException, NoSuchElementException) as e:
-                print(f"Error: Element not found or timeout for action '{action}' in batch {batch_idx + 1}", file=sys.stderr)
+                print(f"Error: Element not found or timeout for action '{action}' in batch {batch_idx + 1}", file=sys.stderr, flush=True)
                 batch_failed = True
             except Exception as e:
-                print(f"Error executing action '{action}' in batch {batch_idx + 1}: {str(e)}", file=sys.stderr)
+                print(f"Error executing action '{action}' in batch {batch_idx + 1}: {str(e)}", file=sys.stderr, flush=True)
                 batch_failed = True
     if metadata_output and metadata:
         with open(metadata_output, "w") as f:

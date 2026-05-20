@@ -86,7 +86,8 @@ def run_bot(tasks, output_metadata=None):
         cmd.extend(["--output-metadata", output_metadata])
     
     print(f"Running bot with {len(tasks)} tasks via {run_bot_path}...")
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    # capture_output=False allows real-time streaming to the console
+    result = subprocess.run(cmd, capture_output=False)
     
     if os.path.exists(tasks_file):
         os.remove(tasks_file)
@@ -167,16 +168,16 @@ def main():
         result = run_bot(master_batches, args.metadata)
         
         if result.returncode != 0:
-            print(f"Error updating screenshots: {result.stderr}")
+            print(f"\nError: UI Documentation Sync failed.")
+            sys.exit(1)
         else:
-            print(result.stdout)
             if args.metadata and os.path.exists(args.metadata):
                 with open(args.metadata, "r") as f:
                     meta = json.load(f)
-                    print(f"Successfully updated screenshots. Extracted metadata saved to {args.metadata}")
+                    print(f"\nSuccessfully updated screenshots. Extracted metadata saved to {args.metadata}")
                     print(f"Extracted info: {json.dumps(meta, indent=2)}")
             else:
-                print("Successfully updated all screenshots.")
+                print("\nSuccessfully updated all screenshots.")
 
 if __name__ == "__main__":
     main()
