@@ -13,7 +13,8 @@ To function correctly, this skill requires:
 1.  **Git Repository**: The project must be a git repository for staleness detection.
 2.  **Configuration**: A `living-docs-config.json` file in the project root.
     - At minimum, it must contain a `"base_url"` (e.g., `"http://localhost:3000"`).
-    - If missing, you MUST identify the frontend base URL from documentation (e.g., `README.md`, `package.json` scripts, or `.env` files) and create it or ask the user for it.
+    - It may contain `"flows"` (e.g., login sequences) and `"mappings"`. **IMPORTANT**: `flows` often contain non-recoverable credentials. You MUST NEVER drop or overwrite these without explicit user consent.
+    - If missing, you MUST identify the frontend base URL from documentation and propose a new configuration to the user.
 3.  **Running Server**: The local development server MUST be running at the `base_url`.
 4.  **Chrome/Chromium**: Installed on the system for the Selenium bot.
 
@@ -72,10 +73,15 @@ To automate a screenshot, add a `snapshot-recipe` comment immediately after an i
 
 When tasked with updating documentation, you MUST follow this sequence:
 
-1.  **Configuration Check**: 
-    - Check if `living-docs-config.json` exists in the root.
-    - If it doesn't, or if `base_url` is missing, SEARCH the project (README, package.json, etc.) for the development server URL.
-    - Propose creating/updating the config if needed.
+1.  **Configuration Check (Non-Destructive)**: 
+    - You MUST read the existing `living-docs-config.json` if it exists. NEVER assume it is empty or missing.
+    - **Preservation Policy**: You MUST PRESERVE all existing keys. `flows` and `mappings` often contain irreplaceable manual configurations (credentials, custom routes for unsupported frameworks). 
+    - **Mapping Intelligence**:
+        - If the project uses a supported framework (e.g., Next.js), you may suggest adding *new* mappings for new files.
+        - If the project technology is unknown/unsupported, or if a mapping already exists for a file, you MUST NOT change the existing mapping.
+        - Treat existing mappings without an `"origin": "auto"` tag as **user-defined** and immutable.
+    - **MANDATORY**: If you need to propose any change to the config, you MUST use `ask_user` to present the proposed full JSON content. Explicitly highlight what is being added and confirm that all existing data is preserved.
+    - Only create a new file if it is absolutely missing and after obtaining user approval.
 
 2.  **Discovery & Staleness**: 
     - Identify stale documents and relevant changed files using the `check_staleness` action.
@@ -114,3 +120,14 @@ When tasked with updating documentation, you MUST follow this sequence:
 
 - **Virtual Environment**: The skill automatically manages its own `venv` in the skill directory.
 - **Local Server**: Visual sync will fail if the server is not running at the `base_url`.
+
+## Manual Retries & Troubleshooting
+
+### Handling "Loading..." States
+If a snapshot captures a "Loading..." placeholder, the browser bot likely executed the snapshot before the content finished loading.
+1.  **Stabilize**: Update the `snapshot-recipe` in the Markdown file to include a `wait_for_hidden` (for the spinner) or `wait_for_text` (for the final content) action before the `snapshot_element` or `snapshot_page` action.
+2.  **Targeted Retry**: Instead of running `sync_ui_docs` or `regen_all`, which syncs everything, use the `take_snapshot` action to regenerate ONLY the affected image by passing the updated tasks.
+
+### Targeted Regeneration
+If you only need to update a single image, you do not need to run the full pipeline. You can manually execute the browser bot tasks for that specific image using the `take_snapshot` action.
+
