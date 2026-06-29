@@ -38,9 +38,21 @@
     {
       "name": "sync_ui_docs",
       "description": "Scans the project for 'snapshot-recipe' blocks in Markdown files and updates all screenshots from the live site.",
+      "parameters": [
+        {
+          "name": "only_images",
+          "description": "Comma-separated list of image filenames or paths to update.",
+          "required": false
+        },
+        {
+          "name": "only_files",
+          "description": "Comma-separated list of Markdown files to scan.",
+          "required": false
+        }
+      ],
       "steps": [
         {
-          "command": "python3 scripts/updater.py",
+          "command": "python3 scripts/updater.py {{#if only_images}}--only-images {{only_images}}{{/if}} {{#if only_files}}--only-files {{only_files}}{{/if}}",
           "description": "Synchronizing documentation visuals."
         }
       ]
@@ -54,11 +66,21 @@
           "description": "Force a visual sync even if no recipe changes are detected.",
           "type": "boolean",
           "default": false
+        },
+        {
+          "name": "only_images",
+          "description": "Comma-separated list of image filenames or paths to update.",
+          "required": false
+        },
+        {
+          "name": "only_files",
+          "description": "Comma-separated list of Markdown files to scan.",
+          "required": false
         }
       ],
       "steps": [
         {
-          "command": "python3 scripts/orchestrator.py {{#if force}}--force-sync{{/if}}",
+          "command": "python3 scripts/orchestrator.py {{#if force}}--force-sync{{/if}} {{#if only_images}}--only-images {{only_images}}{{/if}} {{#if only_files}}--only-files {{only_files}}{{/if}}",
           "description": "Running the master regeneration orchestrator."
         }
       ]

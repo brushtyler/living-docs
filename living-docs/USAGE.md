@@ -39,6 +39,8 @@ The JSON file must contain a list of actions.
 | `wait_for_text` | `selector`, `text`, `timeout` | `{"action": "wait_for_text", "selector": "h1", "text": "Home"}` |
 | `snapshot_page` | `filename` | `{"action": "snapshot_page", "filename": "home.png"}` |
 | `snapshot_element` | `selector`, `filename` | `{"action": "snapshot_element", "selector": "nav", "filename": "menu.png"}` |
+| `highlight` | `selector`, `style`, `color` | `{"action": "highlight", "selector": "#btn", "style": "spotlight", "color": "#ff3366"}` |
+| `clear_highlights` | None | `{"action": "clear_highlights"}` |
 
 ## Error Handling
 - **Exit Code 0**: Success.

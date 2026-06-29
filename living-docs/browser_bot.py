@@ -18,6 +18,8 @@ def setup_driver():
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920,1080")
+    options.add_argument("--disable-web-security")
+    options.add_argument("--disable-site-isolation-trials")
     
     service = ChromeService(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
@@ -59,6 +61,7 @@ def wait_for_network_idle(driver, timeout=10, idle_time=0.5):
 
 def execute_tasks(driver, task_input, metadata_output=None):
     metadata = []
+    has_failed = False
 
     # Normalize input: always work with a list of batches (lists of tasks)
     if not task_input:
@@ -137,6 +140,117 @@ def execute_tasks(driver, task_input, metadata_output=None):
                         EC.text_to_be_present_in_element((By.CSS_SELECTOR, selector), text)
                     )
 
+                elif action == "highlight":
+                    selector = task.get("selector")
+                    style_type = task.get("style", "outline")
+                    color = task.get("color", "#ff3366")
+                    print(f"Highlighting element {selector} with style '{style_type}' and color '{color}'", flush=True)
+                    # Wait for element to be present
+                    WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, selector))
+                    )
+                    
+                    js_highlight = """
+                    const selector = arguments[0];
+                    const styleType = arguments[1];
+                    const color = arguments[2];
+                    const el = document.querySelector(selector);
+                    if (!el) return;
+
+                    // Preserve original styling variables
+                    if (!el.dataset.origOutline) {
+                        el.dataset.origOutline = el.style.outline || '';
+                        el.dataset.origOutlineOffset = el.style.outlineOffset || '';
+                        el.dataset.origBoxShadow = el.style.boxShadow || '';
+                        el.dataset.origPosition = el.style.position || '';
+                        el.dataset.origZIndex = el.style.zIndex || '';
+                    }
+
+                    if (styleType === 'outline') {
+                        el.style.outline = '4px solid ' + color;
+                        el.style.outlineOffset = '4px';
+                        el.style.boxShadow = '0 0 10px ' + color;
+                    } else if (styleType === 'spotlight') {
+                        el.style.position = 'relative';
+                        el.style.zIndex = '999999';
+                        el.style.outline = '4px solid ' + color;
+                        el.style.outlineOffset = '4px';
+                        el.style.boxShadow = '0 0 0 99999px rgba(0, 0, 0, 0.5), 0 0 15px ' + color;
+                    } else if (styleType === 'badge') {
+                        const isVoid = ['INPUT', 'IMG', 'BR', 'HR'].includes(el.tagName);
+                        const badge = document.createElement('div');
+                        badge.className = 'living-docs-highlight-badge';
+                        badge.style.position = 'absolute';
+                        badge.style.width = '20px';
+                        badge.style.height = '20px';
+                        badge.style.borderRadius = '50%';
+                        badge.style.backgroundColor = color;
+                        badge.style.border = '2px solid white';
+                        badge.style.boxShadow = '0 2px 6px rgba(0,0,0,0.4)';
+                        badge.style.zIndex = '1000000';
+                        
+                        if (isVoid) {
+                            // Position absolute on body matching the element coordinates
+                            const rect = el.getBoundingClientRect();
+                            badge.style.position = 'absolute';
+                            badge.style.top = (rect.top + window.scrollY - 8) + 'px';
+                            badge.style.left = (rect.left + window.scrollX - 8) + 'px';
+                            document.body.appendChild(badge);
+                        } else {
+                            // Append inside the element
+                            const origPos = el.style.position;
+                            if (!origPos || origPos === 'static') {
+                                el.style.position = 'relative';
+                            }
+                            badge.style.top = '-8px';
+                            badge.style.left = '-8px';
+                            el.appendChild(badge);
+                        }
+
+                        // Add pulse animation style if not already added
+                        if (!document.getElementById('living-docs-pulse-style')) {
+                            const styleEl = document.createElement('style');
+                            styleEl.id = 'living-docs-pulse-style';
+                            styleEl.innerHTML = `
+                                @keyframes pulse {
+                                    0% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.7); }
+                                    70% { box-shadow: 0 0 0 8px rgba(255, 51, 102, 0); }
+                                    100% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0); }
+                                }
+                                .living-docs-highlight-badge {
+                                    animation: pulse 1.5s infinite;
+                                }
+                            `;
+                            document.head.appendChild(styleEl);
+                        }
+                    }
+                    """
+                    driver.execute_script(js_highlight, selector, style_type, color)
+
+                elif action == "clear_highlights":
+                    print("Clearing all page highlights...", flush=True)
+                    js_clear = """
+                    const elements = document.querySelectorAll('[data-orig-outline]');
+                    elements.forEach(el => {
+                        el.style.outline = el.dataset.origOutline;
+                        el.style.outlineOffset = el.dataset.origOutlineOffset;
+                        el.style.boxShadow = el.dataset.origBoxShadow;
+                        el.style.position = el.dataset.origPosition;
+                        el.style.zIndex = el.dataset.origZIndex;
+                        
+                        delete el.dataset.origOutline;
+                        delete el.dataset.origOutlineOffset;
+                        delete el.dataset.origBoxShadow;
+                        delete el.dataset.origPosition;
+                        delete el.dataset.origZIndex;
+                    });
+
+                    document.querySelectorAll('.living-docs-highlight-badge').forEach(el => el.remove());
+                    const pulseStyle = document.getElementById('living-docs-pulse-style');
+                    if (pulseStyle) pulseStyle.remove();
+                    """
+                    driver.execute_script(js_clear)
+
                 elif action == "snapshot_page" or action == "snapshot":
                     # Wait for network idle before taking snapshot
                     wait_for_network_idle(driver, idle_time=0.5)
@@ -188,9 +302,15 @@ def execute_tasks(driver, task_input, metadata_output=None):
             except Exception as e:
                 print(f"Error executing action '{action}' in batch {batch_idx + 1}: {str(e)}", file=sys.stderr, flush=True)
                 batch_failed = True
+        
+        if batch_failed:
+            has_failed = True
+            
     if metadata_output and metadata:
         with open(metadata_output, "w") as f:
             json.dump(metadata, f, indent=2)
+
+    return not has_failed
 
 def main():
     parser = argparse.ArgumentParser(description="Web Snapshot Browser Bot")
@@ -206,10 +326,14 @@ def main():
         tasks = json.load(f)
         
     driver = setup_driver()
+    success = False
     try:
-        execute_tasks(driver, tasks, args.output_metadata)
+        success = execute_tasks(driver, tasks, args.output_metadata)
     finally:
         driver.quit()
+
+    if not success:
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

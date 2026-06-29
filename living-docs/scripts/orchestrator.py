@@ -26,9 +26,15 @@ def main():
     force_sync = "--force-sync" in sys.argv
     
     config_path = "living-docs-config.json"
+    only_images = None
+    only_files = None
     for i, arg in enumerate(sys.argv):
         if arg == "--config" and i + 1 < len(sys.argv):
             config_path = sys.argv[i+1]
+        elif arg == "--only-images" and i + 1 < len(sys.argv):
+            only_images = sys.argv[i+1]
+        elif arg == "--only-files" and i + 1 < len(sys.argv):
+            only_files = sys.argv[i+1]
 
     print("=== Living Docs: Unified Sync Manager ===")
     
@@ -91,7 +97,7 @@ def main():
             print("Failed to parse recipe check output.")
 
     # 3. Trigger UI Sync if needed or requested
-    if sync_needed or force_sync:
+    if sync_needed or force_sync or only_images or only_files:
         print("\n>>> Triggering UI Documentation Sync...")
         
         updater_path = get_script_path("updater.py")
@@ -100,6 +106,10 @@ def main():
             cmd = [sys.executable, updater_path]
             if config_path != "living-docs-config.json":
                 cmd.extend(["--config", config_path])
+            if only_images:
+                cmd.extend(["--only-images", only_images])
+            if only_files:
+                cmd.extend(["--only-files", only_files])
                 
             sync_result = subprocess.run(
                 cmd,

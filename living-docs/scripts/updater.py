@@ -100,6 +100,8 @@ def main():
     parser.add_argument("--bot", help="Path to browser_bot.py (Legacy, no longer used as primary)")
     parser.add_argument("--config", help="Explicit path to living-docs-config.json")
     parser.add_argument("--metadata", help="Path to save extracted UI metadata")
+    parser.add_argument("--only-images", help="Comma-separated image filenames/paths to update")
+    parser.add_argument("--only-files", help="Comma-separated Markdown filenames/paths to scan")
     args = parser.parse_args()
     
     config = load_config(explicit_path=args.config, search_dir=args.dir)
@@ -107,13 +109,31 @@ def main():
     flows = config.get("flows", {})
 
     md_files = find_markdown_files(args.dir)
+    
+    if args.only_files:
+        allowed_files = {os.path.normpath(f.strip()) for f in args.only_files.split(",")}
+        md_files = [
+            f for f in md_files
+            if os.path.normpath(f) in allowed_files or os.path.basename(f) in allowed_files
+        ]
+
+    target_images = None
+    if args.only_images:
+        target_images = {os.path.normpath(img.strip()) for img in args.only_images.split(",")}
+
     all_recipes = []
     for md_file in md_files:
         recipes = extract_recipes(md_file)
+        if target_images:
+            recipes = [
+                r for r in recipes
+                if os.path.normpath(r["image_path"]) in target_images
+                or os.path.basename(r["image_path"]) in target_images
+            ]
         all_recipes.extend(recipes)
     
     if not all_recipes:
-        print("No snapshot recipes found.")
+        print("No snapshot recipes found matching the filter.")
         return
 
     print(f"Found {len(all_recipes)} recipes in {len(md_files)} files.")

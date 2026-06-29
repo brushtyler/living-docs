@@ -37,10 +37,15 @@ The master orchestrator. It runs the full pipeline:
 1.  Identifies stale documentation.
 2.  Scans for modified snapshot recipes.
 3.  Triggers a full UI synchronization if needed.
+- **force** (boolean, optional): Force a visual sync even if no recipe changes are detected.
+- **only_images** (string, optional): Comma-separated list of image filenames or paths to update.
+- **only_files** (string, optional): Comma-separated list of Markdown files to scan.
 
 ### `sync_ui_docs`
 **Trigger**: "Update screenshots", "Sync visuals", "Regen user documentation"
 The primary tool for visual synchronization. It scans your Markdown files for `snapshot-recipe` comments and automatically updates the associated images by running the browser bot.
+- **only_images** (string, optional): Comma-separated list of image filenames or paths to update.
+- **only_files** (string, optional): Comma-separated list of Markdown files to scan.
 
 ### `check_staleness`
 **Trigger**: "Which docs are stale?", "Check staleness"
@@ -65,6 +70,20 @@ To automate a screenshot, add a `snapshot-recipe` comment immediately after an i
   "tasks": [
     {"action": "goto", "url": "/login"},
     {"action": "snapshot_element", "selector": "#login-form", "filename": "assets/login.png"}
+  ]
+} -->
+```
+
+You can also use the `highlight` and `clear_highlights` actions to highlight specific buttons or visual regions (e.g. outline, spotlight, or badge) when capturing surrounding context:
+
+```markdown
+![Submit button location](./assets/submit-location.png)
+<!-- snapshot-recipe: {
+  "tasks": [
+    {"action": "goto", "url": "/form"},
+    {"action": "highlight", "selector": "#submit-btn", "style": "spotlight", "color": "orange"},
+    {"action": "snapshot_page", "filename": "assets/submit-location.png"},
+    {"action": "clear_highlights"}
   ]
 } -->
 ```

@@ -79,3 +79,75 @@ def test_invalid_selector():
     result = run_browser_bot(tasks)
     assert result.returncode != 0
     assert "Element not found" in result.stderr or "error" in result.stderr.lower()
+
+def test_highlight_action():
+    tasks = [
+        {"action": "goto", "url": "http://localhost:5000"},
+        {"action": "highlight", "selector": "#element-to-snapshot", "style": "spotlight", "color": "rgb(255, 0, 0)"},
+        {"action": "snapshot_page", "filename": "highlighted_page.png"},
+        {"action": "clear_highlights"},
+        {"action": "snapshot_page", "filename": "cleared_page.png"}
+    ]
+    result = run_browser_bot(tasks)
+    assert result.returncode == 0
+    assert os.path.exists("highlighted_page.png")
+    assert os.path.exists("cleared_page.png")
+    os.remove("highlighted_page.png")
+    os.remove("cleared_page.png")
+
+def test_updater_filtering():
+    # Write a temporary config
+    config_data = {
+        "base_url": "http://localhost:5000",
+        "flows": {}
+    }
+    with open("test-config.json", "w") as f:
+        json.dump(config_data, f)
+        
+    # Write a temporary Markdown document with two snapshot recipes
+    md_content = """# Test Doc
+    
+![Image One](./test_img1.png)
+<!-- snapshot-recipe: {
+  "prerequisites": [],
+  "tasks": [
+    {"action": "goto", "url": "/"},
+    {"action": "snapshot_element", "selector": "#header", "filename": "test_img1.png"}
+  ]
+} -->
+
+![Image Two](./test_img2.png)
+<!-- snapshot-recipe: {
+  "prerequisites": [],
+  "tasks": [
+    {"action": "goto", "url": "/"},
+    {"action": "snapshot_element", "selector": "#element-to-snapshot", "filename": "test_img2.png"}
+  ]
+} -->
+"""
+    with open("test_doc.md", "w") as f:
+        f.write(md_content)
+        
+    try:
+        # Run updater filtering for only test_img1.png
+        result = subprocess.run(
+            [sys.executable, "scripts/updater.py", "--config", "test-config.json", "--dir", ".", "--only-images", "test_img1.png"],
+            capture_output=True,
+            text=True
+        )
+        assert result.returncode == 0
+        
+        # test_img1.png should be generated, but test_img2.png should NOT be
+        assert os.path.exists("test_img1.png")
+        assert not os.path.exists("test_img2.png")
+        
+    finally:
+        # Cleanup
+        if os.path.exists("test-config.json"):
+            os.remove("test-config.json")
+        if os.path.exists("test_doc.md"):
+            os.remove("test_doc.md")
+        if os.path.exists("test_img1.png"):
+            os.remove("test_img1.png")
+        if os.path.exists("test_img2.png"):
+            os.remove("test_img2.png")
