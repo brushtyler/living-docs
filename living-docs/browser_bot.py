@@ -74,6 +74,13 @@ def execute_tasks(driver, task_input, metadata_output=None):
 
     for batch_idx, tasks in enumerate(batches):
         print(f"\n--- Executing Batch {batch_idx + 1}/{len(batches)} ({len(tasks)} tasks) ---", flush=True)
+        # Clear cookies and local storage to isolate each batch's session
+        try:
+            driver.delete_all_cookies()
+            if driver.current_url and not (driver.current_url.startswith("data:") or driver.current_url.startswith("about:")):
+                driver.execute_script("window.localStorage.clear();")
+        except Exception as e:
+            pass
         batch_failed = False
         for task in tasks:
             if batch_failed:
