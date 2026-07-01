@@ -57,8 +57,11 @@ Tasks are defined in a JSON array. Example `tasks.json`:
 - `click`: Click an element by CSS selector.
 - `type`: Enter text into an input field.
 - `wait`: Pause for a specified number of seconds.
+- `wait_for_selector` / `wait_for_hidden` / `wait_for_text`: Stabilize snapshots by waiting for specific element/text states.
+- `highlight` / `clear_highlights`: Spotlight, outline, or badge specific elements on the page.
 - `snapshot_page`: Take a full-page screenshot.
 - `snapshot_element`: Take a screenshot of a specific element.
+- `extract_info`: Extract text, tag name, and key attributes from an element.
 
 ## Development
 

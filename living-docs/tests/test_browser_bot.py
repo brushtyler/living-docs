@@ -22,12 +22,16 @@ def mock_server():
     yield
     process.terminate()
 
-def run_browser_bot(tasks):
+def run_browser_bot(tasks, extra_args=None):
     with open("test_tasks.json", "w") as f:
         json.dump(tasks, f)
     
+    cmd = [sys.executable, "browser_bot.py", "--tasks", "test_tasks.json"]
+    if extra_args:
+        cmd.extend(extra_args)
+        
     result = subprocess.run(
-        [sys.executable, "browser_bot.py", "--tasks", "test_tasks.json"],
+        cmd,
         capture_output=True,
         text=True
     )
@@ -147,6 +151,124 @@ def test_updater_filtering():
             os.remove("test-config.json")
         if os.path.exists("test_doc.md"):
             os.remove("test_doc.md")
+        if os.path.exists("test_img1.png"):
+            os.remove("test_img1.png")
+        if os.path.exists("test_img2.png"):
+            os.remove("test_img2.png")
+
+def test_extract_info():
+    tasks = [
+        {"action": "goto", "url": "http://localhost:5000"},
+        {"action": "extract_info", "selector": "#header"},
+        {"action": "extract_info", "selector": "#input-field"}
+    ]
+    result = run_browser_bot(tasks, extra_args=["--output-metadata", "test_metadata.json"])
+    assert result.returncode == 0
+    assert os.path.exists("test_metadata.json")
+    
+    with open("test_metadata.json", "r") as f:
+        metadata = json.load(f)
+    
+    assert len(metadata) == 2
+    assert metadata[0]["selector"] == "#header"
+    assert metadata[0]["text"] == "Welcome to Mock Page"
+    assert metadata[0]["tag"].lower() == "h1"
+    
+    assert metadata[1]["selector"] == "#input-field"
+    assert metadata[1]["tag"].lower() == "input"
+    assert metadata[1]["attributes"]["placeholder"] == "Type here"
+    
+    os.remove("test_metadata.json")
+
+def test_batch_execution_and_session_isolation():
+    batches = [
+        [
+            {"action": "goto", "url": "http://localhost:5000"},
+            {"action": "click", "selector": "#set-session"},
+            {"action": "click", "selector": "#session-info"},
+            {"action": "extract_info", "selector": "#session-info"}
+        ],
+        [
+            {"action": "goto", "url": "http://localhost:5000"},
+            {"action": "click", "selector": "#session-info"},
+            {"action": "extract_info", "selector": "#session-info"}
+        ]
+    ]
+    result = run_browser_bot(batches, extra_args=["--output-metadata", "test_batch_metadata.json"])
+    assert result.returncode == 0
+    assert os.path.exists("test_batch_metadata.json")
+    
+    with open("test_batch_metadata.json", "r") as f:
+        metadata = json.load(f)
+        
+    assert len(metadata) == 2
+    # First batch should set cookie and localStorage
+    assert "testcookie=123" in metadata[0]["text"]
+    assert "456" in metadata[0]["text"]
+    # Second batch should be isolated (cleared)
+    assert "testcookie=123" not in metadata[1]["text"]
+    assert "456" not in metadata[1]["text"]
+    
+    os.remove("test_batch_metadata.json")
+
+def test_updater_only_files():
+    # Write a temporary config
+    config_data = {
+        "base_url": "http://localhost:5000",
+        "flows": {}
+    }
+    with open("test-config.json", "w") as f:
+        json.dump(config_data, f)
+        
+    # Write temporary Markdown documents with snapshot recipes
+    md_content1 = """# Test Doc 1
+    
+![Image One](./test_img1.png)
+<!-- snapshot-recipe: {
+  "prerequisites": [],
+  "tasks": [
+    {"action": "goto", "url": "/"},
+    {"action": "snapshot_element", "selector": "#header", "filename": "test_img1.png"}
+  ]
+} -->
+"""
+    md_content2 = """# Test Doc 2
+    
+![Image Two](./test_img2.png)
+<!-- snapshot-recipe: {
+  "prerequisites": [],
+  "tasks": [
+    {"action": "goto", "url": "/"},
+    {"action": "snapshot_element", "selector": "#element-to-snapshot", "filename": "test_img2.png"}
+  ]
+} -->
+"""
+    with open("test_doc1.md", "w") as f:
+        f.write(md_content1)
+    with open("test_doc2.md", "w") as f:
+        f.write(md_content2)
+        
+    try:
+        # Run updater filtering for only test_doc1.md
+        result = subprocess.run(
+            [sys.executable, "scripts/updater.py", "--config", "test-config.json", "--dir", ".", "--only-files", "test_doc1.md"],
+            capture_output=True,
+            text=True
+        )
+        assert result.returncode == 0
+        
+        # test_img1.png should be generated (from test_doc1.md), but test_img2.png should NOT be (from test_doc2.md)
+        assert os.path.exists("test_img1.png")
+        assert not os.path.exists("test_img2.png")
+        
+    finally:
+        # Cleanup
+        if os.path.exists("test-config.json"):
+            os.remove("test-config.json")
+        if os.path.exists("test_doc1.md"):
+            os.remove("test_doc1.md")
+        if os.path.exists("test_doc2.md"):
+            os.remove("test_doc2.md")
         if os.path.exists("test_img1.png"):
             os.remove("test_img1.png")
         if os.path.exists("test_img2.png"):

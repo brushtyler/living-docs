@@ -23,6 +23,8 @@ def index():
             <button id="click-me" onclick="document.getElementById('header').innerText = 'Button Clicked'">Click Me</button>
             <input type="text" id="input-field" placeholder="Type here">
             <div id="element-to-snapshot">Target Element</div>
+            <button id="set-session" onclick="document.cookie = 'testcookie=123'; localStorage.setItem('testlocal', '456');">Set Session</button>
+            <div id="session-info" onclick="this.innerText = 'cookie:' + document.cookie + ' local:' + localStorage.getItem('testlocal')">Show Session</div>
         </body>
         </html>
     ''')
