@@ -1,0 +1,7 @@
+# Reproducible direct dependency set used for the 2.0.0 release.
+anyio==4.9.0
+hatchling==1.27.0
+mcp==1.28.1
+Pillow==12.3.0
+pydantic==2.13.4
+selenium==4.46.0

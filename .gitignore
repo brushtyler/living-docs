@@ -2,15 +2,28 @@
 __pycache__/
 .pytest_cache/
 
-# Virtual environment
+# Virtual environments and local dependencies
+.deps/
+.venv/
 venv/
 **/venv/
 
-# Test generated files
+# Build output
+dist/
+build/
+*.egg-info/
+
+# Test-generated files
 temp_tasks.json
 test_tasks.json
 metadata_*.json
 sandbox/docs/assets/*.png
+.living-docs-session*.json
+**/.living-docs/review/
+
+# Local agent and code-index state
+/.agents/
+/.codegraph/
 
 # Editor temporary files
 *.swp

@@ -1,24 +1,33 @@
 {
+  "schema_version": 1,
   "base_url": "http://localhost:3000",
+  "workers": 1,
+  "reuse_session": true,
+  "browser": {
+    "binary_path": null,
+    "driver_path": null,
+    "headless": true,
+    "window_size": [1920, 1080],
+    "offline": false
+  },
+  "security": {
+    "allowed_origins": ["http://localhost:3000"],
+    "output_root": "."
+  },
   "flows": {
     "login": [
       {"action": "goto", "url": "/login"},
-      {"action": "type", "selector": "#user", "text": "admin"},
-      {"action": "type", "selector": "#pass", "text": "password"},
+      {"action": "type", "selector": "#user", "text": "${ENV:LIVING_DOCS_USER}"},
+      {"action": "type", "selector": "#pass", "text": "${ENV:LIVING_DOCS_PASSWORD}"},
       {"action": "click", "selector": "#submit"},
-      {"action": "wait", "seconds": 1}
+      {"action": "wait_for_selector", "selector": "#dashboard"}
     ]
   },
   "mappings": [
     {
-      "description": "Custom components mapping",
+      "description": "Custom component previews",
       "pattern": "src/components/(.*)\\.tsx",
-      "urls": ["/styleguide", "/preview/{1}"]
-    },
-    {
-      "description": "Legacy pages",
-      "pattern": "src/legacy/.*\\.html",
-      "urls": ["/legacy-view"]
+      "urls": ["/preview/{1}"]
     }
   ]
 }

@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "living-docs": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "living-docs",
+        "living-docs-mcp",
+        "--project-root",
+        "."
+      ],
+      "cwd": "."
+    }
+  }
+}

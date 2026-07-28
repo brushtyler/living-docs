@@ -1,0 +1,77 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "living-docs"
+version = "2.0.0"
+description = "Cross-platform documentation snapshot automation over CLI and MCP"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+authors = [{ name = "Living Docs contributors" }]
+keywords = ["documentation", "mcp", "selenium", "screenshots"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+  "anyio==4.9.0",
+  "mcp>=1.27,<2",
+  "pydantic>=2.10,<3",
+  "selenium>=4.29,<5",
+  "Pillow>=11,<13",
+]
+
+[project.optional-dependencies]
+test = [
+  "build>=1.2,<2",
+  "pytest>=8.3,<9",
+  "pytest-asyncio>=0.25,<1",
+]
+
+[project.scripts]
+living-docs = "living_docs.cli:main"
+living-docs-mcp = "living_docs.mcp_server:main"
+
+[project.urls]
+Documentation = "https://github.com/netresults/living-docs"
+Repository = "https://github.com/netresults/living-docs"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/living_docs"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"integrations" = "living_docs/integrations"
+"living-docs-config.json.example" = "living_docs/living-docs-config.json.example"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/.github",
+  "/src",
+  "/tests",
+  "/integrations",
+  "/docker",
+  "/README.md",
+  "/CONFIGURATION.md",
+  "/INTEGRATIONS.md",
+  "/MIGRATION.md",
+  "/TESTING.md",
+  "/TROUBLESHOOTING.md",
+  "/living-docs-config.json.example",
+  "/requirements.lock",
+  "/LICENSE",
+]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+  "browser: real Chrome integration tests",
+]

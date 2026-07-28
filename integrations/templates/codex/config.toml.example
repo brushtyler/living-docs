@@ -1,0 +1,4 @@
+[mcp_servers.living-docs]
+command = "living-docs-mcp"
+args = ["--project-root", "."]
+cwd = "."

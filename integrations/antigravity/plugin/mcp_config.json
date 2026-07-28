@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "living-docs": {
+      "command": "living-docs-mcp",
+      "args": ["--project-root", "."],
+      "cwd": "."
+    }
+  }
+}

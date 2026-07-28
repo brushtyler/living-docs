@@ -1,0 +1,13 @@
+{
+  "name": "living-docs",
+  "version": "2.0.0",
+  "description": "Validate and synchronize Markdown UI snapshots",
+  "mcpServers": {
+    "living-docs": {
+      "command": "living-docs-mcp",
+      "args": ["--project-root", "${workspacePath}"],
+      "cwd": "${extensionPath}"
+    }
+  },
+  "contextFileName": "GEMINI.md"
+}

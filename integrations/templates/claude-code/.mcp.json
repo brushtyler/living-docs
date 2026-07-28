@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "living-docs": {
+      "type": "stdio",
+      "command": "living-docs-mcp",
+      "args": ["--project-root", "."]
+    }
+  }
+}
