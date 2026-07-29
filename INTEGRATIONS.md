@@ -97,6 +97,10 @@ gemini extensions install --path integrations/gemini-cli
 
 Restart Gemini CLI after installation.
 
+When upgrading from the 1.x Gemini Skill, uninstall the old `living-docs`
+skill before running `living-docs init --gemini`; both versions use the same
+skill name. Follow the [1.x upgrade guide](MIGRATION.md#if-1x-was-installed-as-a-gemini-skill).
+
 ## GitHub Copilot
 
 Run `living-docs init --copilot`. Review repository MCP configuration before

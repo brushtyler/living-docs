@@ -233,7 +233,7 @@ captures, and review mode.
 
 Existing version-1 configuration and recipes remain data-compatible. See
 [Configuration](CONFIGURATION.md), [agent integrations](INTEGRATIONS.md), and
-the [2.0 migration guide](MIGRATION.md).
+the [1.x upgrade guide](MIGRATION.md).
 
 ## Review before replacement
 
